@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "node.h"
 #include "botforth.h"
@@ -13,7 +14,6 @@
 /* ********************************************* */
 int vector_delete(struct vector *v, struct node *n)
 {
-	struct node *temp;
 	// todo: rueckgabewerte einbauen
 	if (n == NULL || v->tail == NULL)
 		return 0;
@@ -33,7 +33,7 @@ int vector_delete(struct vector *v, struct node *n)
 /* clear gibt stapelspeicher komplett frei       */
 /* return 0 wenn I.O.                            */
 /* übergabe: ein element des stapels             */
-/* umbauen, dass man den zu löschenden Vektor angibt, und nicht ein element
+/* umbauen, dass man den zu löschenden Vektor angibt, und nicht ein element */
 /* ********************************************* */
 int vector_destroy(struct vector *stapel)
 {
@@ -80,7 +80,7 @@ int debug(struct vector *v)
 		case BF_TYPE_STRING:
 		case BF_TYPE_C_TEXT:
 			printf("%i: %s - %s\n", elem->type, elem->name,
-			       elem->content);
+			       (char *)elem->content);
 			break;
 		default:
 			printf("%i: %s - nicht darstellbar\n", elem->type,
