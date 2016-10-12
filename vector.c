@@ -1,6 +1,7 @@
 #include <stdio.h>
-#include "botforth.h"
 #include <string.h>
+#include "node.h"
+#include "botforth.h"
 
 #define STRINGLENGTH 255
 #define DEBUG printf("\n---DEBUG---\n");

@@ -2,7 +2,7 @@
 #define BOTFORTH_H
 
 #include "def.h"
-#include <assert.h>
+#include "node.h"
 
 // einige globale Variablen
 struct node *pc;		// Program Counter - Zeiger auf den nächsten Befehl
@@ -36,23 +36,6 @@ void botforth_interpreter(struct vector *program, int withinfoblock);
 void botforth_call(struct vector *program);
 void botforth_return();
 
-
-// node functions
-struct node {
-	void *content;
-	int type;
-	char *name;
-	struct node *next;
-	struct node *prev;
-};
-struct node *node_create(void *content, int type);
-struct node *node_copy(struct node *n);
-int node_destroy(struct node *n);
-int node_toInt(struct node *n);
-char *node_toString(struct node *n);
-struct vector *node_toVector(struct node *n);
-float node_toFloat(struct node *n);
-struct node *node_toNode(struct node *n);
 
 // vector functions
 struct vector {
