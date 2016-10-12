@@ -41,8 +41,7 @@ struct node *node_copy(struct node *n)
 	case BF_TYPE_STRING:
 		assert(n->content != NULL);
 		content = malloc(strlen(n->content) + 1);
-		sprintf(content, "%s", n->content);
-		//memcpy(content,n->content,strlen(n->content)+1);
+		memcpy(content,n->content,strlen(n->content)+1);
 		break;
 	case BF_TYPE_POINTER:
 		content = n->content;
@@ -96,6 +95,7 @@ int node_destroy(struct node *n)
 	if (n->name)
 		free(n->name);
 	free(n);
+        return 1;
 }
 
 int node_toInt(struct node *n)
