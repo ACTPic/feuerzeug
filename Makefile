@@ -11,7 +11,7 @@ all: botforth
 makeintcommand:
 	./makeintcommand.sh > getintcommand.c
 
-botforth: makeintcommand $(OBJECTS)
+botforth: $(OBJECTS)
 	$(CC) $(CFLAGS) -o botforth $(OBJECTS) $(LIBS)
 
 $(OBJECTS): $(HEADERS)
