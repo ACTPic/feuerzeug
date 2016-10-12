@@ -4,8 +4,15 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <string.h>
-// #include <linux/list.h>
 #include "botforth.h"
+
+// MySQL-Krempel
+MYSQL_FIELD *fld;
+MYSQL mysql_read;
+MYSQL mysql_write;
+MYSQL_RES *res;
+MYSQL_ROW row;
+
 
 int infoblock_get_accesslevel(struct vector *word)
 {

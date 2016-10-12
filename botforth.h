@@ -1,16 +1,8 @@
-#include "/usr/include/mysql/mysql.h"
-#include <assert.h>
+#ifndef BOTFORTH_H
+#define BOTFORTH_H
 
-#define BF_TYPE_NODE 0
-#define BF_TYPE_C_TEXT 1
-#define BF_TYPE_C_INT 2
-#define BF_TYPE_C_EXT 3
-#define BF_TYPE_INT 4
-#define BF_TYPE_FLOAT 5
-#define BF_TYPE_POINTER 6
-#define BF_TYPE_STRING 7
-#define BF_TYPE_VECTOR 8
-#define BF_TYPE_MYSQLRES 9
+#include "def.h"
+#include <assert.h>
 
 // einige globale Variablen
 struct node *pc;		// Program Counter - Zeiger auf den nächsten Befehl
@@ -32,13 +24,6 @@ struct vector *zstack;
 
 // speicher fuer fertig kompilierte Worte
 struct vector *words;
-
-// mysql-krempel
-MYSQL_FIELD *fld;
-MYSQL mysql_read;
-MYSQL mysql_write;
-MYSQL_RES *res;
-MYSQL_ROW row;
 
 // irc-kram
 int ircsocket;
@@ -122,6 +107,4 @@ char *getintcommandname(void *p);
 // file
 struct vector *load_file(char *name);
 
-// makros
-#define min(a,b) ((a)<(b) ? a : b)
-#define max(a,b) ((a)>(b) ? a : b)
+#endif
