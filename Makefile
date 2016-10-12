@@ -1,6 +1,5 @@
-#CC = gcc-3.4
 CC = gcc
-CFLAGS = -g -D_GNU_SOURCE  -O0
+CFLAGS = -g -D_GNU_SOURCE -O0 -Og -Wall -Wextra -Werror
 
 LIBS = -lmysqlclient -lz -lm
 OBJECTS = vector.o node.o intcommands.o file.o com.o botforth.o
