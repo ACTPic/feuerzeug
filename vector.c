@@ -367,7 +367,7 @@ char *vector_pick_string(struct vector *v, char *name)
 	if (n)
 		return node_toString(node_copy(n));
 	temp = malloc(1);
-	sprintf(temp, "");
+	*temp = 0;
 	return temp;
 }
 
