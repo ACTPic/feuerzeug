@@ -1,5 +1,7 @@
+#include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+
 #include "botforth.h"
 
 #define STRINGLENGTH 255
