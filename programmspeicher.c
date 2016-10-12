@@ -5,14 +5,14 @@
 #define DEBUG printf("\n---DEBUG---\n");
 
 struct botforthsymbol {
-  char name[256];
-  struct node *jumptarget;
-  int  type;
+	char name[256];
+	struct node *jumptarget;
+	int type;
 };
 
 struct bfprogram {
-  char name[256];
-  struct stack program;
+	char name[256];
+	struct stack program;
 };
 
 /* ********************************************* */
@@ -21,7 +21,8 @@ struct bfprogram {
 /* return 0 wenn I.O. und ausgabe                */
 /* uebergabe: ein element des stapels            */
 /* ********************************************* */
-int programm_debug(struct stack *stapel) {
+int programm_debug(struct stack *stapel)
+{
 /*
   struct programm *elem = stapel;
   while ( elem->prev != elem ) elem=elem->prev;
@@ -38,4 +39,3 @@ int programm_debug(struct stack *stapel) {
   return 0;
 */
 }
-

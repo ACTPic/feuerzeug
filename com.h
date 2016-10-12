@@ -29,13 +29,13 @@ int disconnect_irc(int socketnum);
 
 // ***************************************************************
 // sendet einen string an den ircd, 
-//	zu lange strings werden nach stelle LINELENGTH-2 abgeschnitten
-//	und nen CR-LF (also \r\n) angefügt
+//      zu lange strings werden nach stelle LINELENGTH-2 abgeschnitten
+//      und nen CR-LF (also \r\n) angefügt
 // int socketnum = socket-handler
 // char *msg = zu sendender string (1-LINELENGTH byte)
 // return -2 = string leer
 // return -1 = fehler in send()
-// return num>0 = übertragene bytes	
+// return num>0 = übertragene bytes     
 //
 int netsend(int socketnum, char *msg);
 
@@ -46,9 +46,9 @@ int netsend(int socketnum, char *msg);
 // jede zeile des ircd SOLLTE mit einem \r\n abgeschlossen sein.
 // die zeilenlänge ist in LINELENGTH definiert. im RFC ist diese mit maximal
 // 512byte (inklusive \r\n) angegeben. standard it aber 255byte
-// sollte die zeilenlänge LINELENGTH überschreiten wird socket geschlossen.								
+// sollte die zeilenlänge LINELENGTH überschreiten wird socket geschlossen.                                                             
 // int socketnum = socketfd zum ircd
 // return '\0' = zeile zu lang oder CR-LF-fehler leerer string wird zurückgegeben und disconnect
-// return *char	= zeiger auf den empfangenen string				 
+// return *char = zeiger auf den empfangenen string                              
 //
 char *netrecv(int socketnum);
