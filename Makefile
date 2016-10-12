@@ -1,7 +1,7 @@
 #CC = gcc-3.4
 CC = gcc
 CFLAGS = -g -D_GNU_SOURCE  -O0
-#LIBS = `sdl-config --libs` -lSGE -lSDL_mixer -lSDL_image -lz
+
 LIBS = -lmysqlclient -lz -lm
 OBJECTS = vector.o node.o intcommands.o file.o com.o botforth.o
 HEADERS = botforth.h
