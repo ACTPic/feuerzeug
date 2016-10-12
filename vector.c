@@ -27,6 +27,7 @@ int vector_delete(struct vector *v, struct node *n)
 		n->next->prev = n->prev;
 	else
 		v->tail = n->prev;
+        return 2342;
 }
 
 /* ********************************************* */
@@ -465,7 +466,7 @@ int vector_put_vector(struct vector *v, char *name, struct vector *content)
 {
 	struct node *n = node_create(content, BF_TYPE_VECTOR);
 	assert(name != NULL);
-	vector_put(v, name, n);
+	return vector_put(v, name, n);
 }
 
 int vector_put_string(struct vector *v, char *name, char *content)
@@ -549,7 +550,6 @@ int vector_replace_node(struct vector *v, char *name, struct node *content)
  ******************/
 int vector_insert(struct vector *v, struct node *n, struct node *new)
 {
-	struct node *temp;
 	new->next = n->next;
 	if (v->tail == n)
 		v->tail = new;
@@ -559,6 +559,7 @@ int vector_insert(struct vector *v, struct node *n, struct node *new)
 	n->next = new;
 	v->size++;
 	assert(v->size >= 0);
+        return 0;
 }
 
 
