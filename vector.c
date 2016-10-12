@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "node.h"
+#include "vector.h"
 #include "botforth.h"
 
 #define STRINGLENGTH 255
