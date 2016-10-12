@@ -1,0 +1,4 @@
+44 'const '?address
+"__b" 'command
+swap
+"nop" 'command '?address '@address

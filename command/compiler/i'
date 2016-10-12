@@ -1,0 +1,6 @@
+"r>" 'command
+"r>" 'command
+"dup" 'command
+">r" 'command
+"swap" 'command
+">r" 'command

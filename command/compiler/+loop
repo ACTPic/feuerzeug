@@ -1,0 +1,18 @@
+// Laufvariable Inkrementieren und mit Grenze vergleichen
+"r>" 'command
+"+" 'command
+"dup" 'command
+">r" 'command
+"i'" 'command
+">" 'command
+"not" 'command
+
+// Sprung zurück zu do, falls die Laufvariable noch kleiner ist
+'const
+"__bz" 'command
+
+// Die Laufvariable ist wohl schon zu groß: Also aufräumen
+"r>" 'command
+"r>" 'command
+"drop" 'command
+"drop" 'command

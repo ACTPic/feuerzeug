@@ -1,0 +1,115 @@
+doku? gibts nicht.
+
+
+organisation des infoblocks:
+1. accesslevel
+2. name
+3. clearcache
+4. cachename
+
+
+hier der text, den ich zum entwurf verwendet habe. eher veraltet:
+
+
+
+
+Programmfestspeicher
+====================
+Vorerst einfach auf Festplatte in einem Verzeichnis.
+
+
+Datenfestspeicher
+=================
+Noch garnicht, später vielleicht auch Festplatte, oder mysql, oder wie auch
+immer.
+
+
+
+Datenarbeitsspeicher
+====================
+Doppelt verkettete Liste, jedes Element kann zusätzlich einen Namen haben.
+Zugriff entweder durch push/pop bzw. shift/unshift, über eine Nummer wie bei
+einem Array oder über seinen Namen wie bei einem Hash. 
+Es ist aber auch möglich, direkt über einen Pointer zuzugreifen. Pointer
+lassen sich jedoch nicht vom Benutzer direkt erstellen, sondern nur von
+entsprechend priviligierten Programmen.
+
+Im ersten Entwurf würde man Elemente, auf die per Nummer oder Namen
+zugegriffen wird, durch naive Suche finden. Später kann man ja noch einen
+Index oder ähnliches drauf setzen.
+
+Diese Speicherstruktur nenne ich "vector".
+
+Datentypen:
+Nach Außen hin sollen nur wenige verschiedene Datentypen sichtbar sein:
+- Wert (integer, string, was auch immer)
+- Vector
+
+Wert wird intern in mehrere subtypen unterteilt, die jedoch automatisch
+bei Bedarf konvertiert werden:
+- int
+- float
+- string, bzw. pointer auf string
+- pointer auf Elemente eines Vektors
+
+Aus technischer Sicht gibt es nach Außen hin eigentlich auch nicht die
+Unterscheidung zwischen Wert und vector. Auch hier kann und wird bei Bedarf
+eine automatische Konvertierung vorgenommen. Im Normalfall wird jedoch der
+Anwender dies nicht tun, und in der Dokumentation wird auch immer ein klarer
+Unterschied zwischen normalen Werten und Vektoren gemacht.
+
+Ein Sonderfall ist der Pointer auf Elemente eines Vektors: Weder kann von
+einem Wert in diesen Typ konvertiert werden, noch anders herum (bzw. doch,
+aber dann käme nur ein String "pointer" oder 0 bei heraus).
+
+Die einzelnen Elemente eines Vektors werden in einem union gespeichert. Der
+Union enthält die verschiedenen möglichen Ausprägungen der Werte, also int,
+float, und pointer. Zudem gibt es ein Feld, in dem gespeichert wird, welche
+Ausprägung gerade "aktiv" ist.
+
+Ein zusätzlicher Typ, den man später noch hinzufügen könnte wäre "array".
+Dieser Typ würde sich zum Speichern größerer Datenmengen eignen, da er
+gegenüber einem Vektor keinen Overhead pro Element hätte. 
+
+Programmarbeitsspeicher
+=======================
+Der Programmspeicher ist nichts anderes als normaler Datenspeicher. Dies
+macht es möglich, Compilererweiterungen selbst in botforth zu schreiben.
+
+
+minibotforth
+============
+Folgende Befehle müssen implementiert werden:
+- swap
+- +
+...
+
+minibotforth sollte so extrem simpel sein, daß man es später vielleicht
+sogar ganz weg lassen kann, um direkt nach Maschinensprache zu kompilieren.
+
+Compiler von botforth nach minibotforth
+========================================
+
+1. Schritt: lexikalische analyse, also erkennen der einzelnen
+schluesselworte usw.
+Hier wird zwar erkannt, was ein Befehl ist, aber noch nicht, ob der Befehl
+intern oder extern vorliegt. Jeder Befehl wird als Node vom Typ
+BF_TYPE_C_TEXT gespeichert, wobei der Befehlsname in Klartext als String
+abgelegt wird.
+
+2. Schritt: Compiler. Hier wird botforth nach minibotforth gewandelt. Auch
+hier werden jedoch Befehlsnamen als BF_TYPE_C_TEXT abgelegt.
+
+3. Ausführung: Erst während der Programmausführung, also wenn wir uns schon
+längst nicht mehr im Compilermodus befinden, werden Befehle vom Typ
+BF_TYPE_C_TEXT, sobald sie ausgeführt werden sollen, in BF_TYPE_C_INT bzw.
+BF_TYPE_C_EXT gewandelt.
+
+Dies dient dazu, den Compiler vom User erweiterbar zu halten. Er kann so
+leicht Befehle einfügen, ohne mit Pointern etc. rumspielen zu müssen. Somit
+wird auch kein Sicherheitsloch erzeugt. Aus der Sicht eines Anwenders, der
+den Compiler durch das Programmieren von Compilezeitverhaltens von Befehlen
+erweitern will, sind Befehle quasi wie Strings zu handhaben.
+
+
+

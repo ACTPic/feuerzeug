@@ -1,0 +1,6 @@
+"select * from irc_calc where eintrag like 'test%'" sql_query >r
+r> sql_fetch swap >r "name" vector_pick
+r> sql_fetch swap >r "name" vector_pick
+
+
+

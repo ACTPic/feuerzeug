@@ -1,0 +1,5 @@
+#!/bin/sh
+ulimit -d 50000
+ulimit -v 50000
+
+while [ 1 ]; do (proxychains ./botforth $1 ) ; sleep 20; done

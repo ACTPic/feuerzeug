@@ -1,0 +1,4 @@
+"swap" 'command
+">r" 'command
+">r" 'command
+"nop" 'command '?address
