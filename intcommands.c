@@ -1,8 +1,13 @@
+#include <stdint.h>
+#include <unistd.h>
+#include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include "botforth.h"
 #include <time.h>
 #include <math.h>
+#include "com.h"
+#include "vector.h"
+#include "botforth.h"
 
 
 
@@ -594,7 +599,7 @@ void bf_c_vector_pick()
 			vector_push(dstack, node_copy(n));
 		} else {
 			temp = malloc(1);
-			sprintf(temp, "");
+                        *temp = 0;
 			vector_push_string(dstack, temp);
 		}
 	}
@@ -615,7 +620,7 @@ void bf_c_vector_get()
 			vector_push(dstack, n);
 		} else {
 			temp = malloc(1);
-			sprintf(temp, "");
+			*temp = 0;
 			vector_push_string(dstack, temp);
 		}
 	}
@@ -840,7 +845,7 @@ void bf_c_concat()
 void bf_c_strsplit()
 {
 	char *s1, *s2, *s3;
-	int n;
+	unsigned n;
 	n = vector_pop_int(dstack);
 	s3 = vector_pop_string(dstack);
 	n = min(n, strlen(s3));
@@ -858,14 +863,14 @@ void bf_c_strsplit()
 void bf_c_strpos()
 {
 	char *s1, *s2;
-	int n;
 	s1 = vector_pop_string(dstack);
 	s2 = vector_pop_string(dstack);
-	n = strstr(s2, s1);
+	char *p = strstr(s2, s1);
+        int n = 0;
+	if (p)
+		n = p - s2 + 1;
 	free(s1);
 	free(s2);
-	if (n)
-		n = n - (int) s2 + 1;
 	vector_push_int(dstack, n);
 }
 
@@ -884,32 +889,21 @@ void bf_c_strlen()
 void bf_c_sql_query()
 {
 	char *query;
-	int ok;
 	MYSQL_RES *res = NULL;
 	MYSQL *mysql;
 	if (accesslevel < 3)
 		mysql = &mysql_write;
 	else
 		mysql = &mysql_read;
-	ok = 1;
 	query = vector_pop_string(dstack);
 	if (mysql_real_query(mysql, query, strlen(query))) {
 		printf("sql query (intcommands) fehlgeschlagen\n");
-		ok = 0;
 	} else if ((res = mysql_store_result(mysql))) {
 		// Lesezugriff (SELECT)
 		vector_push_mysqlres(dstack, res);
 	} else {
 		// Schreibzugriff (INSERT, REPLACE, usw.)
 	}
-/*
-  if(ok) {
-    if(res) {
-      vector_push_mysqlres(dstack,res);
-    }
-    //vector_push_int(dstack,ok);
-  }
-*/
 	free(query);
 }
 
@@ -919,9 +913,9 @@ void bf_c_sql_fetch()
 	char *buffer, *buffer2;
 	struct node *n;
 	struct vector *v;
-	int i;
+	unsigned i;
 	if (res) {
-		if (row = mysql_fetch_row(res)) {
+		if((row = mysql_fetch_row(res))) {
 			v = vector_create();
 			for (i = 0; i < mysql_num_fields(res); i++) {
 				if (row[i]) {
@@ -1146,7 +1140,6 @@ void bf_c_file_append()
 void bf_c_interpret()
 {
 	char *word = vector_pop_string(dstack);
-	struct vector *infoblock;
 	struct vector *program, *v;
 	char *buffer2, *name;
 	assert(word != NULL);
@@ -1155,19 +1148,6 @@ void bf_c_interpret()
 	name = malloc(20);
 	interpretcounter++;
 	sprintf(name, "interpret%i", interpretcounter);
-	// infoblock ergaenzen
-	/*
-	   infoblock=(struct vector*)program->head->content;
-	   buffer2=malloc(strlen(buffer)+1);
-	   sprintf(buffer2,"%s",buffer);
-	   n2=node_create(buffer2,BF_TYPE_STRING);
-	   vector_put(infoblock,"cachename",n2);
-	   buffer2=malloc(strlen(name)+1);
-	   sprintf(buffer2,"%s",name);
-	   free(infoblock->head->next->content);
-	   infoblock->head->next->content=buffer2;
-	   // update accesslevel in the infoblock
-	 */
 	infoblock_set_accesslevel(program, 3);
 	// update program name
 	buffer2 = malloc(9 + 1);
@@ -1245,7 +1225,7 @@ void bf_c_explain()
 			count++;
 			break;
 		case BF_TYPE_INT:
-			vector_push_int(dstack, word->content);
+			vector_push_int(dstack, (uintptr_t)word->content);
 			count++;
 			break;
 		case BF_TYPE_FLOAT:
@@ -1279,11 +1259,10 @@ void bf_c_explain()
 			count++;
 			break;
 		case BF_TYPE_POINTER:
-			vector_push_int(dstack, word->content);
+			vector_push_pointer(dstack, word->content);
 			count++;
 			break;
 		}
-		//vector_push_int(dstack,word->type);
 		word = word->next;
 	}
 	vector_push_int(dstack, count);
