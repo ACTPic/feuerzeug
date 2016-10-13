@@ -10,10 +10,10 @@ struct vector *sql_load(char *name)
 {
 	char *query;
 	MYSQL_RES *res;
-	char *buffer, *buffer2, *nameescape;
+	char *buffer=0, *nameescape;
 	struct node *n;
 	struct vector *v;
-	int i;
+	unsigned i;
 	nameescape = malloc(strlen(name) * 3 * sizeof(char));
 	mysql_escape_string(nameescape, name, strlen(name));
 	query = malloc((39 + strlen(nameescape) + 1) * sizeof(char));
@@ -28,7 +28,7 @@ struct vector *sql_load(char *name)
 		v = vector_create();
 		n = node_create(buffer, BF_TYPE_STRING);
 		vector_put(v, fld->name, n);
-		return (n);
+		return((struct vector *)n);
 	} else {
 		free(query);
 		free(nameescape);
@@ -37,7 +37,7 @@ struct vector *sql_load(char *name)
 			exit(0);
 		}
 		if (res) {
-			if (row = mysql_fetch_row(res)) {
+			if((row = mysql_fetch_row(res))) {
 				v = vector_create();
 				for (i = 0; i < mysql_num_fields(res); i++) {
 					if (row[i]) {
@@ -76,7 +76,6 @@ struct vector *sql_load(char *name)
 struct vector *load_file(char *name)
 {
 	struct vector *v;
-	char *buffer;
 	v = sql_load(name);
 	return v;
 }
