@@ -22,7 +22,7 @@ int infoblock_get_accesslevel(struct vector *word)
 	return *(int *) infoblock->head->content;
 }
 
-infoblock_set_accesslevel(struct vector *word, int al)
+void infoblock_set_accesslevel(struct vector *word, int al)
 {
 	struct vector *infoblock;
 	assert(word);
@@ -38,7 +38,7 @@ char *infoblock_get_name(struct vector *word)
 	return infoblock->head->next->content;
 }
 
-infoblock_set_name(struct vector * word, char *name)
+void infoblock_set_name(struct vector * word, char *name)
 {
 	struct vector *infoblock;
 	assert(word);
