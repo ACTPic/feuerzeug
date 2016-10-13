@@ -3,7 +3,7 @@ CFLAGS = -g -D_GNU_SOURCE -O0 -Og -Wall -Wextra -Werror -L/usr/include/mysql
 
 LIBS = -lmysqlclient -lz -lm
 OBJECTS = vector.o node.o intcommands.o file.o com.o botforth.o
-HEADERS = botforth.h
+HEADERS = def.h botforth.h com.h node.h vector.h
 
 all: botforth
 
