@@ -45,4 +45,6 @@ char *getintcommandname(void *p);
 // file
 struct vector *load_file(char *name);
 
+extern struct vector *word_load(char *name, char *ns);
+
 #endif
