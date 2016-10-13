@@ -54,7 +54,7 @@ void infoblock_set_name(struct vector * word, char *name)
 int get_stringtype(char *s)
 {
 	int z = 0;		// zustand
-	int i;
+	unsigned i;
 	char c;			// aktuelles zeichen
 	int ret = -1;
 	for (i = 0; i <= strlen(s); i++) {
@@ -165,7 +165,7 @@ struct vector *botforth_parse(char *progstring)
 		return 0;
 	}
 	void addsymbol(char *progstring, int *first, int last, int type) {
-		struct node *symb;
+		struct node *symb = 0;
 		char *item;
 		int itemlen;
 		int *i;
@@ -174,7 +174,7 @@ struct vector *botforth_parse(char *progstring)
 		itemlen = last - (*first) + 1;
 		//assert(itemlen>0);
 		item = malloc(itemlen + 1);
-		assert(item > 0);
+		assert(item != 0);
 		strncpy(item, progstring + (*first) - 1, itemlen);
 		item[itemlen] = 0;
 		//printf("Symbol erkannt: %s (%i)\n",item,type);
@@ -202,7 +202,7 @@ struct vector *botforth_parse(char *progstring)
 	}
 	int z = 0;		// Zustand
 	char c;			// Aktuelles Zeichen
-	int i;
+	unsigned i;
 	int first;
 	char item[255];
 	char *temps;
@@ -451,17 +451,14 @@ struct vector *botforth_parse(char *progstring)
 
 struct vector *word_load(char *name, char *ns)
 {
-	FILE *fp;
 	char *word;
 	char *buffer, *buffer2;
-	char charbuffer;
 	char *tmpns;
 	struct vector *program;
 	struct node *lex;
-	int i;
 	int newaccesslevel;
 	int *tempint;
-	struct vector *v, *v2, *infoblock;
+	struct vector *v, *infoblock;
 	struct node *n = NULL, *n2 = NULL;
 	// todo:  ueberpruefen, ob lexicon leer ist
 	assert(lexicon);
@@ -477,7 +474,7 @@ struct vector *word_load(char *name, char *ns)
 			buffer =
 			    malloc(10 + strlen(lex->content) +
 				   strlen(name));
-			sprintf(buffer, "command/%s/%s", lex->content,
+			sprintf(buffer, "command/%s/%s", (char *)lex->content,
 				name);
 			tmpns = lex->content;
 		} else {
@@ -683,6 +680,7 @@ void botforth_return()
 	int oldaccesslevel;
 	// todo: speicherleck vielleicht irgendwie?
 	oldaccesslevel = vector_pop_int(rstack);
+        (void)oldaccesslevel;  // Warnung unterdrücken
 	cword = vector_pop_vector(rstack);
 	pc = vector_pop_node(rstack);
 	if (cword)
@@ -700,7 +698,6 @@ void botforth_interpreter(struct vector *program, int withinfoblock)
 	struct vector *newprogram;	// temp var for loading new words;
 	struct node *tempnode;
 	struct node *c;		// pointer to the actual command
-	int i;
 	cword = program;
 	pc = program->head;
 	if (pc == NULL)
@@ -770,7 +767,7 @@ void botforth_interpreter(struct vector *program, int withinfoblock)
 			break;
 		case BF_TYPE_STRING:	// String
 			temp = malloc(strlen(c->content) + 1);
-			sprintf(temp, "%s", c->content);
+			sprintf(temp, "%s", (char *)c->content);
 			tempnode = node_create(temp, c->type);
 			vector_push(dstack, tempnode);
 			break;
@@ -787,7 +784,7 @@ void botforth_interpreter(struct vector *program, int withinfoblock)
 			break;
 		}
 		// end of the word? have a look at the return stack...
-		while (pc == NULL && rstack->tail != NULL ||
+		while ((pc == NULL && rstack->tail != NULL) ||
 		       (accesslevel > 1 && runlimit > 0
 			&& (int) time(NULL) > runlimit)) {
 			botforth_return();
@@ -800,9 +797,9 @@ struct vector *botforth_compile(struct vector *word)
 {
 	struct node *n, *newn, *cn, *newcn;
 	char *buffer;
-	char *text;
+//	char *text;
 	struct vector *compword;
-	struct vector *ncstack;
+//	struct vector *ncstack;
 	struct vector *nword = vector_create();
 	printf("starte compiler\n");
 	assert(cstack != NULL);
@@ -847,7 +844,7 @@ struct vector *botforth_compile(struct vector *word)
 				if (compword) {
 					assert(compword->head != NULL);	// todo: das sollte weg, leere programme sind ok
 					printf("kompiliere %s\n",
-					       n->content);
+					       (char *)n->content);
 					// save the environment to estack
 					assert(cstack != NULL);
 					vector_push_vector(estack, cstack);
@@ -903,7 +900,7 @@ int main(int argc, char **argv)
 {
 	//struct vector *rstack=vector_create();
 	struct vector *program;
-	char *word, *temp;
+	char *temp;
 	int i;
 	words = vector_create();
 	cstack = vector_create();
@@ -973,4 +970,6 @@ int main(int argc, char **argv)
 	botforth_interpreter(program, 1);
 	printf("Datenstapel: ");
 	debug(dstack);
+
+        return 0;
 }
