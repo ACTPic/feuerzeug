@@ -189,7 +189,7 @@ void bf_c_mod()
 	if (i2 != 0) {
 		vector_push_int(dstack, i1 % i2);
 	} else {
-		// todo: besser NaN zur�ck
+		// todo: besser NaN zurück
 		vector_push_int(dstack, 0);
 	}
 }
@@ -203,7 +203,7 @@ void bf_c_div()
 		d = div(i1, i2);
 		vector_push_int(dstack, d.quot);
 	} else {
-		// todo: besser inf zur�ck
+		// todo: besser inf zurück
 		vector_push_float(dstack, HUGE_VAL);
 	}
 }
@@ -1127,6 +1127,10 @@ void bf_c_file_append()
 	if (accesslevel < 3) {
 		if (filename && text) {
 			file = fopen(filename, "a");
+                        if(!file) {
+                                fprintf(stderr, "Append-Fail: „%s“.\n", filename);
+                                abort();
+                        }
 			fprintf(file, "%s", text);
 			fclose(file);
 		}
