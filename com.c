@@ -177,7 +177,7 @@ int netsend(int socketnum, char *msg)
 //
 char *netrecv(int socketnum)
 {
-	char static buffer[LINELENGTH];
+	static char buffer[LINELENGTH];
 	char *a;
 	int i = 0;
 
@@ -235,7 +235,7 @@ char *netrecv(int socketnum)
 int resolve_ircd(char *host, int port)
 {
 	struct hostent *he;
-	struct in6_addr addr6;
+//	struct in6_addr addr6;
 	struct in_addr addr;
 	char ipv6[INET6_ADDRSTRLEN];
 
