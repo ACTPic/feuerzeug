@@ -1,6 +1,8 @@
 #ifndef VECTOR_H
 #define VECTOR_H
 
+#include "def.h"
+
 struct vector {
         struct node *head;
         struct node *tail;
@@ -46,6 +48,8 @@ extern struct node *vector_shift(struct vector *v);
 extern int vector_unshift(struct vector *v,struct node* n);
 extern int vector_push_float(struct vector *v,float content);
 extern float vector_pop_float(struct vector *v);
+extern int vector_push_mysqlres(struct vector *v,MYSQL_RES *content);
+extern MYSQL_RES *vector_pop_mysqlres(struct vector * v);
 
 extern int debug(struct vector *v);
 
