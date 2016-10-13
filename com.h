@@ -7,15 +7,15 @@
 // return -2 = fehler beim connecten
 // return num>0 = socketfd
 // 
-int connect_irc(int port, char *ipnum);
-int connect_irc6(int port, char *ipnum);
+extern int connect_irc(int port, char *ipnum);
+extern int connect_irc6(int port, char *ipnum);
 
 
 
 // *************************************************************
 // resolved die IPv4 / IPv6 des ircd
 //
-int resolve_ircd(char *host);
+extern int resolve_ircd(char *host);
 
 
 
@@ -23,7 +23,7 @@ int resolve_ircd(char *host);
 // schliesst die verbindung zum ircd
 // int socketnum = socketfd
 // 
-int disconnect_irc(int socketnum);
+extern int disconnect_irc(int socketnum);
 
 
 
@@ -37,7 +37,7 @@ int disconnect_irc(int socketnum);
 // return -1 = fehler in send()
 // return num>0 = übertragene bytes     
 //
-int netsend(int socketnum, char *msg);
+extern int netsend(int socketnum, char *msg);
 
 
 
@@ -51,4 +51,4 @@ int netsend(int socketnum, char *msg);
 // return '\0' = zeile zu lang oder CR-LF-fehler leerer string wird zurückgegeben und disconnect
 // return *char = zeiger auf den empfangenen string                              
 //
-char *netrecv(int socketnum);
+extern char *netrecv(int socketnum);
