@@ -15,7 +15,7 @@ extern int connect_irc6(int port, char *ipnum);
 // *************************************************************
 // resolved die IPv4 / IPv6 des ircd
 //
-extern int resolve_ircd(char *host);
+extern int resolve_ircd(char *host, int port);
 
 
 
