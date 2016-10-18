@@ -955,13 +955,13 @@ int main(int argc, char **argv)
 	// set lexicon
 	//temp=malloc(5); sprintf(temp,"dope");
 	//vector_push_string(lexicon,temp);
-	temp = malloc(4);
+	temp = malloc(strlen("lib")+1);
 	sprintf(temp, "lib");
 	vector_push_string(lexicon, temp);
-	temp = malloc(4);
+	temp = malloc(strlen("service")+1);
 	sprintf(temp, "service");
 	vector_push_string(lexicon, temp);
-	temp = malloc(4);
+	temp = malloc(strlen("bot"+1));
 	sprintf(temp, "bot");
 	vector_push_string(lexicon, temp);
 
