@@ -1,6 +1,7 @@
 #ifndef DEF_H
 #define DEF_H
 
+#include <cdb.h>
 #include <time.h>
 #include <assert.h>
 #include <stdbool.h>

@@ -1,8 +1,10 @@
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
+#include <fcntl.h>
 #include <string.h>
 #include "botforth.h"
 
@@ -13,6 +15,7 @@ MYSQL mysql_write;
 MYSQL_RES *res;
 MYSQL_ROW row;
 
+struct cdb cdb;
 
 int infoblock_get_accesslevel(struct vector *word)
 {
@@ -945,6 +948,14 @@ int main(int argc, char **argv)
 		printf("mysql write datenbankwahl gescheitert.\n");
 		exit(1);
 	}
+
+        int fd = open("calc.cdb", O_RDONLY);
+        if(fd == -1) {
+                perror("open");
+                exit(EXIT_FAILURE);
+        }
+        cdb_init(&cdb, fd);
+
 	// push parameters to dstack
 	for (i = 1; i < argc; i++) {
 		temp = malloc(strlen(argv[i]) + 1);
