@@ -961,7 +961,7 @@ int main(int argc, char **argv)
 	temp = malloc(strlen("service")+1);
 	sprintf(temp, "service");
 	vector_push_string(lexicon, temp);
-	temp = malloc(strlen("bot"+1));
+	temp = malloc(strlen("bot")+1);
 	sprintf(temp, "bot");
 	vector_push_string(lexicon, temp);
 
