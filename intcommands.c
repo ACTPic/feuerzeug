@@ -1124,8 +1124,6 @@ void bf_c_file_append()
 	char *filename = vector_pop_string(dstack);
 	char *text = vector_pop_string(dstack);
 	FILE *file;
-        fprintf(stderr, "Dateianhangsversuch mit Level %d: „%s“\n",
-               accesslevel, filename);
 	if (accesslevel < 3) {
 		if (filename && text) {
 			file = fopen(filename, "a");
