@@ -929,7 +929,7 @@ void bf_c_sql_fetch()
 							BF_TYPE_STRING);
 					buffer2 =
 					    malloc(strlen(fld->name) *
-						   sizeof(char));
+						   sizeof(char)+1);
 					strcpy(buffer2, fld->name);
 					n->name = buffer2;
 					vector_push(v, n);
