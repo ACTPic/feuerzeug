@@ -109,9 +109,10 @@ void build_node(char *name, struct vector *v, char *sub) {
 
 struct vector *load_file(char *name)
 {
-//	struct vector *v;
-//	v = sql_load(name);
+	struct vector *v;
+	v = sql_load(name);
 
+#if 0
         char key[strlen(name)+strlen("/")+strlen("bot")+1];
         strcpy(key, name);
         strcat(key, "/");
@@ -138,6 +139,7 @@ struct vector *load_file(char *name)
         build_node(name, v, "count");
         build_node(name, v, "type");
         build_node(name, v, "tag");
+#endif
 
 	return v;
 }
