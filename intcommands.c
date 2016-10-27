@@ -888,9 +888,23 @@ void bf_c_strlen()
 
 void bf_c_sql_query()
 {
-	char *query = vector_pop_string(dstack);
-
-	printf("TODO: SQL-Query: „%s“\n", query);
+	char *query;
+	MYSQL_RES *res = NULL;
+	MYSQL *mysql;
+	if (accesslevel < 3)
+		mysql = &mysql_write;
+	else
+		mysql = &mysql_read;
+	query = vector_pop_string(dstack);
+	if (mysql_real_query(mysql, query, strlen(query))) {
+		printf("sql query (intcommands) fehlgeschlagen\n");
+	} else if ((res = mysql_store_result(mysql))) {
+		// Lesezugriff (SELECT)
+		vector_push_mysqlres(dstack, res);
+	} else {
+		// Schreibzugriff (INSERT, REPLACE, usw.)
+	}
+	free(query);
 }
 
 void bf_c_sql_fetch()

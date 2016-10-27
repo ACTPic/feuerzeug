@@ -919,7 +919,6 @@ int main(int argc, char **argv)
 	// zufall initialisieren
 	srand(time(NULL));
 
-        /*
 	// mysql-verbindung aufbauen
 	mysql_init(&mysql_read);
 	if (!mysql_real_connect
@@ -949,7 +948,6 @@ int main(int argc, char **argv)
 		printf("mysql write datenbankwahl gescheitert.\n");
 		exit(1);
 	}
-        */
 
         int fd = open("calc.cdb", O_RDONLY);
         if(fd == -1) {
