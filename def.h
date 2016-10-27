@@ -25,6 +25,9 @@ extern MYSQL mysql_write;
 extern MYSQL_RES *res;
 extern MYSQL_ROW row;
 
+// CDB-Krempel
+extern struct cdb cdb;
+
 // Makros
 #define min(a,b) \
         ({ __typeof__ (a) _a = (a); \

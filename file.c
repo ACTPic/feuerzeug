@@ -6,8 +6,6 @@
 //#include <linux/list.h>
 #include "botforth.h"
 
-extern struct cdb cdb;
-
 char *cdballoc(char *key) {
         char *val = 0;
         if (cdb_find(&cdb, key, strlen(key)) > 0) {
