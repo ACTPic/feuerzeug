@@ -18,16 +18,6 @@
 #define BF_TYPE_VECTOR 8
 #define BF_TYPE_MYSQLRES 9
 
-// MySQL-Krempel
-extern MYSQL_FIELD *fld;
-extern MYSQL mysql_read;
-extern MYSQL mysql_write;
-extern MYSQL_RES *res;
-extern MYSQL_ROW row;
-
-// CDB-Krempel
-extern struct cdb cdb;
-
 // Makros
 #define min(a,b) \
         ({ __typeof__ (a) _a = (a); \

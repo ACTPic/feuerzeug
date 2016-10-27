@@ -6,6 +6,16 @@
 //#include <linux/list.h>
 #include "botforth.h"
 
+// MySQL-Krempel
+extern MYSQL_FIELD *fld;
+extern MYSQL mysql_read;
+extern MYSQL mysql_write;
+extern MYSQL_RES *res;
+extern MYSQL_ROW row;
+
+// CDB-Krempel
+extern struct cdb cdb;
+
 char *cdballoc(char *key) {
         char *val = 0;
         if (cdb_find(&cdb, key, strlen(key)) > 0) {

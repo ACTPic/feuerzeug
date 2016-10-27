@@ -15,6 +15,7 @@ MYSQL mysql_write;
 MYSQL_RES *res;
 MYSQL_ROW row;
 
+// CDB-Krempel
 struct cdb cdb;
 
 int infoblock_get_accesslevel(struct vector *word)
