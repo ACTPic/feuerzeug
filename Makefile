@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -g -D_GNU_SOURCE -O0 -Og -Wall -Wextra -Werror -L/usr/include/mysql
+CFLAGS = -g -D_GNU_SOURCE -std=gnu11 -O0 -Og -Wall -Wextra -Werror -L/usr/include/mysql
 
 LIBS = -lmysqlclient -lz -lm -lcdb
 OBJECTS = vector.o node.o intcommands.o file.o db_mysql.o com.o botforth.o
