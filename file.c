@@ -7,11 +7,7 @@
 #include "botforth.h"
 
 // MySQL-Krempel
-extern MYSQL_FIELD *fld;
 extern MYSQL mysql_read;
-extern MYSQL mysql_write;
-extern MYSQL_RES *res;
-extern MYSQL_ROW row;
 
 // CDB-Krempel
 extern struct cdb cdb;
@@ -101,24 +97,3 @@ struct vector *load_file(char *name)
 	return v;
 }
 
-
-/*
-  fp=fopen(buffer,"r");
-  if(fp) {
-    i=0;
-    word=(char *)malloc(sizeof(char));
-    while(feof(fp)==0) {
-      word=realloc(word,sizeof(char)*(i+2));
-      charbuffer=fgetc(fp);
-      word[i]=charbuffer;
-      i++;
-    }
-    word[i]='\0';
-    fclose(fp);
-    printf("programmtext: %s\n",word);
-    program=botforth_parse(word);
-  } else {
-    printf("wort nicht gefunden\n");
-    program=NULL;
-  }
-  */
