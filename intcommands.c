@@ -10,11 +10,8 @@
 #include "botforth.h"
 
 // MySQL-Krempel
-extern MYSQL_FIELD *fld;
 extern MYSQL mysql_read;
 extern MYSQL mysql_write;
-extern MYSQL_RES *res;
-extern MYSQL_ROW row;
 
 // CDB-Krempel
 extern struct cdb cdb;
@@ -933,7 +930,7 @@ void bf_c_sql_fetch()
 		return;
 	}
 
-	row = mysql_fetch_row(res);
+	MYSQL_ROW row = mysql_fetch_row(res);
 	if (!row) {
 		vector_push_db(dstack, db);
 		return;
@@ -944,7 +941,7 @@ void bf_c_sql_fetch()
 		if (!row[i])
 			continue;
 
-		fld = mysql_fetch_field_direct(res, i);
+		MYSQL_FIELD *fld = mysql_fetch_field_direct(res, i);
 		char *buf = malloc(strlen(row[i]) + 1);
 		assert(buf);
 		strcpy(buf, row[i]);
