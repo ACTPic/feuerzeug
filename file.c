@@ -70,30 +70,27 @@ struct vector *load_file(char *name)
 	strcat(key, "bot");
 	printf("· load_file (CDB) „%s“:", key);
 
-	/*
-	   int cdbret = cdb_find(&cdb, key, strlen(key));
-	   assert(cdbret != -1);
-	   if (cdbret == 0) {
-	   printf("Kein Eintrag „%s“.\n", name);
-	   return 0;
-	   }
+	int cdbret = cdb_find(&cdb, key, strlen(key));
+	assert(cdbret != -1);
+	if (cdbret == 0) {
+		printf("Kein Eintrag „%s“.\n", name);
+		return v;
+	}
 
-	   struct vector *vc = 0;       // vector_create();
-	   build_node(name, vc, "auth");
-	   build_node(name, vc, "name");
-	   build_node(name, vc, 0);     // „eintrag“
-	   build_node(name, vc, "inhalt");
-	   build_node(name, vc, "zeit");
-	   build_node(name, vc, "bot");
-	   build_node(name, vc, "protected");
-	   build_node(name, vc, "channel");
-	   build_node(name, vc, "network");
-	   build_node(name, vc, "count");
-	   build_node(name, vc, "type");
-	   build_node(name, vc, "tag");
-	   build_node(name, vc, "lastcall");
-	 */
+	struct vector *vc = 0;	// vector_create();
+	build_node(name, vc, "auth");
+	build_node(name, vc, "name");
+	build_node(name, vc, 0);	// „eintrag“
+	build_node(name, vc, "inhalt");
+	build_node(name, vc, "zeit");
+	build_node(name, vc, "bot");
+	build_node(name, vc, "protected");
+	build_node(name, vc, "channel");
+	build_node(name, vc, "network");
+	build_node(name, vc, "count");
+	build_node(name, vc, "type");
+	build_node(name, vc, "tag");
+	build_node(name, vc, "lastcall");
 
 	return v;
 }
-
