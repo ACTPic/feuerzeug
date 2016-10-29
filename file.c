@@ -79,20 +79,20 @@ struct vector *load_file(char *name)
 		return 0;
 	}
 
-	struct vector *v = vector_create();
-	build_node(name, v, 0);
-	build_node(name, v, "inhalt");
-	build_node(name, v, "bot");
-	build_node(name, v, "zeit");
-	build_node(name, v, "name");
-	build_node(name, v, "lastcall");
-	build_node(name, v, "protected");
-	build_node(name, v, "auth");
-	build_node(name, v, "channel");
-	build_node(name, v, "network");
-	build_node(name, v, "count");
-	build_node(name, v, "type");
-	build_node(name, v, "tag");
+	struct vector *vc = vector_create();
+	build_node(name, vc, "auth");
+	build_node(name, vc, "name");
+	build_node(name, vc, 0);	// „eintrag“
+	build_node(name, vc, "inhalt");
+	build_node(name, vc, "zeit");
+	build_node(name, vc, "bot");
+	build_node(name, vc, "protected");
+	build_node(name, vc, "channel");
+	build_node(name, vc, "network");
+	build_node(name, vc, "count");
+	build_node(name, vc, "type");
+	build_node(name, vc, "tag");
+	build_node(name, vc, "lastcall");
 #endif
 
 	return v;
