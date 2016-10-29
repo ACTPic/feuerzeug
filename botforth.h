@@ -47,7 +47,7 @@ struct vector *load_file(char *name);
 
 extern struct vector *word_load(char *name, char *ns);
 extern void infoblock_set_accesslevel(struct vector *word, int al);
-extern void infoblock_set_name(struct vector * word, char *name);
+extern void infoblock_set_name(struct vector *word, char *name);
 extern char *infoblock_get_name(struct vector *word);
 
 #endif
