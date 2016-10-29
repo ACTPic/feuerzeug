@@ -912,6 +912,9 @@ void bf_c_sql_query()
 		assert(db);
 		memset(db, 0, sizeof(struct db));
 		db->mysql_res = res;
+                db->query = malloc(strlen(query)+1);
+                assert(db->query);
+                strcpy(db->query, query);
 		vector_push_db(dstack, db);
 	} else {
 		// Schreibzugriff (INSERT, REPLACE, usw.)
@@ -922,6 +925,7 @@ void bf_c_sql_query()
 void bf_c_sql_fetch()
 {
 	struct db *db = vector_pop_db(dstack);
+        assert(db);
 	MYSQL_RES *res = db->mysql_res;
 
 	if (!res) {
@@ -953,10 +957,17 @@ void bf_c_sql_fetch()
 		vector_push(v, n);
 	}
 
+        assert(db->query);
+        char *query = malloc(strlen(db->query)+1);
+        assert(query);
+        strcpy(query, db->query);
+
 	db = malloc(sizeof(struct db));
 	assert(db);
 	memset(db, 0, sizeof(struct db));
+        db->query = query;
 	db->mysql_res = res;
+
 	vector_push_db(dstack, db);
 	vector_push_vector(dstack, v);
 }
@@ -974,7 +985,7 @@ void bf_c_sql_numrows()
 
 	int numrows = mysql_num_rows(res);
 	vector_push_db(dstack, db);
-	vector_push_int(dstack, numrows);
+	vector_push_int(dstack, numrows ? 1 : 0);
 }
 
 void bf_c_sql_freeres()
@@ -988,7 +999,9 @@ void bf_c_sql_freeres()
 	MYSQL_RES *res = db->mysql_res;
 	assert(res);
 	mysql_free_result(res);
-	free(db);
+        assert(db->query);
+        free(db->query);
+        free(db);
 }
 
 void bf_c_sql_escape()
