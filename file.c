@@ -47,7 +47,6 @@ void build_node(char *name, struct vector *v, char *sub)
 
 	char *val = cdballoc(key);
 	if (val) {
-		printf("„%s“ => „%s“\n", key, val);
 		struct node *node = node_create(val, BF_TYPE_STRING);
 		vector_put(v, sub, node);
 	}
@@ -59,6 +58,13 @@ struct vector *load_file(char *name)
 {
 	struct vector *v;
 	v = sql_load(name);
+
+	printf("· load_file (SQL) „%s“:", name);
+	if (v)
+		debug(v);
+	else
+		puts("[nil]");
+	puts("—————————————");
 
 #if 0
 	char key[strlen(name) + strlen("/") + strlen("bot") + 1];
