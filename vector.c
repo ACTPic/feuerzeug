@@ -28,7 +28,7 @@ int vector_delete(struct vector *v, struct node *n)
 		n->next->prev = n->prev;
 	else
 		v->tail = n->prev;
-        return 2342;
+	return 2342;
 }
 
 /* ********************************************* */
@@ -82,7 +82,7 @@ int debug(struct vector *v)
 		case BF_TYPE_STRING:
 		case BF_TYPE_C_TEXT:
 			printf("%i: %s - %s\n", elem->type, elem->name,
-			       (char *)elem->content);
+			       (char *) elem->content);
 			break;
 		default:
 			printf("%i: %s - nicht darstellbar\n", elem->type,
@@ -220,9 +220,9 @@ int vector_push_pointer(struct vector *v, struct node *content)
 	return vector_push(v, n);
 }
 
-int vector_push_mysqlres(struct vector *v, MYSQL_RES * content)
+int vector_push_db(struct vector *v, struct db *content)
 {
-	struct node *n = node_create(content, BF_TYPE_MYSQLRES);
+	struct node *n = node_create(content, BF_TYPE_DB);
 	char *name = malloc(1);
 	name[0] = '\0';
 	n->name = name;
@@ -318,12 +318,11 @@ struct node *vector_pop_pointer(struct vector *v)
 	return temp;
 }
 
-MYSQL_RES *vector_pop_mysqlres(struct vector * v)
+struct db *vector_pop_db(struct vector *v)
 {
-	MYSQL_RES *temp;
 	struct node *n = vector_pop(v);
-	temp = (MYSQL_RES *) node_toMysqlres(n);
-	return temp;
+	struct db *tmp = node_todb(n);
+	return tmp;
 }
 
 /* *************************************************
@@ -560,7 +559,7 @@ int vector_insert(struct vector *v, struct node *n, struct node *new)
 	n->next = new;
 	v->size++;
 	assert(v->size >= 0);
-        return 0;
+	return 0;
 }
 
 

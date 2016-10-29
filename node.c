@@ -41,7 +41,7 @@ struct node *node_copy(struct node *n)
 	case BF_TYPE_STRING:
 		assert(n->content != NULL);
 		content = malloc(strlen(n->content) + 1);
-		memcpy(content,n->content,strlen(n->content)+1);
+		memcpy(content, n->content, strlen(n->content) + 1);
 		break;
 	case BF_TYPE_POINTER:
 		content = n->content;
@@ -85,9 +85,15 @@ int node_destroy(struct node *n)
 	case BF_TYPE_NODE:
 		node_destroy((struct node *) n->content);
 		break;
-	case BF_TYPE_MYSQLRES:
-		mysql_free_result((MYSQL_RES *) n->content);
-		break;
+	case BF_TYPE_DB:
+        {
+                struct db *tmp = n->content;
+                assert(tmp);
+                MYSQL_RES *res = tmp->mysql_res;
+                assert(res);
+                mysql_free_result(res);
+                break;
+        }
 	case BF_TYPE_POINTER:
 		// nichts loeschen, der node hier gehoert ja wem anders
 		break;
@@ -95,7 +101,7 @@ int node_destroy(struct node *n)
 	if (n->name)
 		free(n->name);
 	free(n);
-        return 1;
+	return 1;
 }
 
 int node_toInt(struct node *n)
@@ -187,9 +193,9 @@ char *node_toString(struct node *n)
 		sprintf(r, "Node");
 		node_destroy(n);
 		break;
-	case BF_TYPE_MYSQLRES:
-		r = malloc(9);
-		sprintf(r, "MysqlRes");
+	case BF_TYPE_DB:
+		r = malloc(strlen("db" + 1));
+		strcpy(r, "db");
 		node_destroy(n);
 		break;
 	default:
@@ -240,20 +246,20 @@ struct node *node_toPointer(struct node *n)
 	return NULL;
 }
 
-MYSQL_RES *node_toMysqlres(struct node * n)
+struct db *node_todb(struct node *n)
 {
-	MYSQL_RES *content;
-	if (n == NULL)
-		return NULL;
-	if (n->type == BF_TYPE_MYSQLRES) {
-		content = n->content;
+	struct db *content = 0;
+	if (!n)
+		return content;
+	if (n->type == BF_TYPE_DB) {
+		content = (struct db *) n->content;
 		if (n->name)
 			free(n->name);
 		free(n);
 		return content;
 	}
 	node_destroy(n);
-	return NULL;
+	return content;
 }
 
 

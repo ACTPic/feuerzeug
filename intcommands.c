@@ -44,7 +44,7 @@ void bf_c_dup()
 	struct node *n2;
 	int *i;
 	n1 = vector_pop(dstack);
-	if (n1 && (n1->type != BF_TYPE_MYSQLRES)) {
+	if (n1 && (n1->type != BF_TYPE_DB)) {
 		n2 = node_copy(n1);
 		vector_push(dstack, n1);
 	} else {
@@ -607,7 +607,7 @@ void bf_c_vector_pick()
 			vector_push(dstack, node_copy(n));
 		} else {
 			temp = malloc(1);
-                        *temp = 0;
+			*temp = 0;
 			vector_push_string(dstack, temp);
 		}
 	}
@@ -874,7 +874,7 @@ void bf_c_strpos()
 	s1 = vector_pop_string(dstack);
 	s2 = vector_pop_string(dstack);
 	char *p = strstr(s2, s1);
-        int n = 0;
+	int n = 0;
 	if (p)
 		n = p - s2 + 1;
 	free(s1);
@@ -896,19 +896,26 @@ void bf_c_strlen()
 
 void bf_c_sql_query()
 {
-	char *query;
-	MYSQL_RES *res = NULL;
 	MYSQL *mysql;
 	if (accesslevel < 3)
 		mysql = &mysql_write;
 	else
 		mysql = &mysql_read;
-	query = vector_pop_string(dstack);
+
+	char *query = vector_pop_string(dstack);
+	assert(query);
+
+	MYSQL_RES *res = 0;
+
 	if (mysql_real_query(mysql, query, strlen(query))) {
-		printf("sql query (intcommands) fehlgeschlagen\n");
+		printf("bf_c_sql_query „%s“ fehlgeschlagen.\n", query);
 	} else if ((res = mysql_store_result(mysql))) {
 		// Lesezugriff (SELECT)
-		vector_push_mysqlres(dstack, res);
+		struct db *db = malloc(sizeof(struct db));
+		assert(db);
+		memset(db, 0, sizeof(struct db));
+		db->mysql_res = res;
+		vector_push_db(dstack, db);
 	} else {
 		// Schreibzugriff (INSERT, REPLACE, usw.)
 	}
@@ -917,70 +924,84 @@ void bf_c_sql_query()
 
 void bf_c_sql_fetch()
 {
-	MYSQL_RES *res = (MYSQL_RES *) vector_pop_mysqlres(dstack);
-	char *buffer, *buffer2;
-	struct node *n;
-	struct vector *v;
-	unsigned i;
-	if (res) {
-		if((row = mysql_fetch_row(res))) {
-			v = vector_create();
-			for (i = 0; i < mysql_num_fields(res); i++) {
-				if (row[i]) {
-					fld =
-					    mysql_fetch_field_direct(res,
-								     i);
-					buffer =
-					    malloc(strlen(row[i]) + 1);
-					sprintf(buffer, "%s", row[i]);
-					n = node_create(buffer,
-							BF_TYPE_STRING);
-					buffer2 =
-					    malloc(strlen(fld->name) *
-						   sizeof(char)+1);
-					strcpy(buffer2, fld->name);
-					n->name = buffer2;
-					vector_push(v, n);
-				}
-			}
-			vector_push_mysqlres(dstack, res);
-			vector_push_vector(dstack, v);
-		} else {
-			vector_push_mysqlres(dstack, res);
-		}
-	} else {
-		printf("kein mysql-res auf stack gefunden.\n");
+	struct db *db = vector_pop_db(dstack);
+	MYSQL_RES *res = db->mysql_res;
+
+	if (!res) {
+		printf
+		    ("bf_c_sql_fetch: Keine Datenbank auf dem Stapel gefunden.\n");
+		return;
 	}
+
+	row = mysql_fetch_row(res);
+	if (!row) {
+		vector_push_db(dstack, db);
+		return;
+	}
+
+	struct vector *v = vector_create();
+	for (unsigned i = 0; i < mysql_num_fields(res); i++) {
+		if (!row[i])
+			continue;
+
+		fld = mysql_fetch_field_direct(res, i);
+		char *buf = malloc(strlen(row[i]) + 1);
+		assert(buf);
+		strcpy(buf, row[i]);
+		struct node *n;
+		n = node_create(buf, BF_TYPE_STRING);
+		char *buf2 = malloc(strlen(fld->name) + 1);
+		strcpy(buf2, fld->name);
+		n->name = buf2;
+		vector_push(v, n);
+	}
+
+	db = malloc(sizeof(struct db));
+	assert(db);
+	memset(db, 0, sizeof(struct db));
+	db->mysql_res = res;
+	vector_push_db(dstack, db);
+	vector_push_vector(dstack, v);
 }
 
 void bf_c_sql_numrows()
 {
-	MYSQL_RES *res = (MYSQL_RES *) vector_pop_mysqlres(dstack);
-	int numrows;
-	if (res) {
-		numrows = mysql_num_rows(res);
-		vector_push_mysqlres(dstack, res);
-		vector_push_int(dstack, numrows);
-	} else {
-		printf("kein mysql-res auf stack gefunden.\n");
+	struct db *db = vector_pop_db(dstack);
+	if (!db) {
+		printf
+		    ("bf_c_sql_numrows: Keine Datenbank auf dem Stapel gefunden.\n");
+		return;
 	}
+	MYSQL_RES *res = db->mysql_res;
+	assert(res);
+
+	int numrows = mysql_num_rows(res);
+	vector_push_db(dstack, db);
+	vector_push_int(dstack, numrows);
 }
 
 void bf_c_sql_freeres()
 {
-	MYSQL_RES *res = (MYSQL_RES *) vector_pop_mysqlres(dstack);
-	if (res) {
-		mysql_free_result(res);
+	struct db *db = vector_pop_db(dstack);
+	if (!db) {
+		printf
+		    ("bf_c_sql_freeres: Keine Datenbank auf dem Stapel gefunden.\n");
+		return;
 	}
+	MYSQL_RES *res = db->mysql_res;
+	assert(res);
+	mysql_free_result(res);
+	free(db);
 }
 
 void bf_c_sql_escape()
 {
-	char *escape;
-	char *s;
-	s = vector_pop_string(dstack);
-	escape = malloc(strlen(s) * 3);
+	char *s = vector_pop_string(dstack);
+	assert(s);
+	char *escape = malloc(strlen(s) * 3);
+	assert(escape);
 	mysql_escape_string(escape, s, strlen(s));
+	printf("bf_c_sql_escape: „%s“ → „%s“\n", s, escape);
 	free(s);
 	vector_push_string(dstack, escape);
 }
@@ -1135,10 +1156,11 @@ void bf_c_file_append()
 	if (accesslevel < 3) {
 		if (filename && text) {
 			file = fopen(filename, "a");
-                        if(!file) {
-                                fprintf(stderr, "Append-Fail: „%s“.\n", filename);
-                                abort();
-                        }
+			if (!file) {
+				fprintf(stderr, "Append-Fail: „%s“.\n",
+					filename);
+				abort();
+			}
 			fprintf(file, "%s", text);
 			fclose(file);
 		}
@@ -1237,7 +1259,7 @@ void bf_c_explain()
 			count++;
 			break;
 		case BF_TYPE_INT:
-			vector_push_int(dstack, (uintptr_t)word->content);
+			vector_push_int(dstack, (uintptr_t) word->content);
 			count++;
 			break;
 		case BF_TYPE_FLOAT:

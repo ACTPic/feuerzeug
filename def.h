@@ -16,7 +16,12 @@
 #define BF_TYPE_POINTER 6
 #define BF_TYPE_STRING 7
 #define BF_TYPE_VECTOR 8
-#define BF_TYPE_MYSQLRES 9
+#define BF_TYPE_DB 9
+
+// Generische Struktur für alle unterstützten Datenbanken
+struct db {
+	MYSQL_RES *mysql_res;
+};
 
 // Makros
 #define min(a,b) \
