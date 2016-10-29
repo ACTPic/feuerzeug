@@ -29,10 +29,7 @@ char *cdballoc(char *key)
 
 void build_node(char *name, struct vector *v, char *sub)
 {
-	return;			// TODO
-
 	if (!sub) {
-		printf("Eintrag „%s“\n", name);
 		struct node *node = node_create(name, BF_TYPE_STRING);
 		vector_put(v, "eintrag", node);
 		return;
@@ -94,5 +91,5 @@ struct vector *load_file(char *name)
 	build_node(name, vc, "lastcall");
 	debug(vc);
 
-	return v;
+	return vc;
 }
