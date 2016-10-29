@@ -72,12 +72,13 @@ struct vector *load_file(char *name)
 
 	int cdbret = cdb_find(&cdb, key, strlen(key));
 	assert(cdbret != -1);
-	if (cdbret == 0) {
-		printf("Kein Eintrag „%s“.\n", name);
+	if (!cdbret) {
+		puts("[nil]");
+		puts("—————————————");
 		return v;
 	}
 
-	struct vector *vc = 0;	// vector_create();
+	struct vector *vc = vector_create();
 	build_node(name, vc, "auth");
 	build_node(name, vc, "name");
 	build_node(name, vc, 0);	// „eintrag“
@@ -91,6 +92,7 @@ struct vector *load_file(char *name)
 	build_node(name, vc, "type");
 	build_node(name, vc, "tag");
 	build_node(name, vc, "lastcall");
+	debug(vc);
 
 	return v;
 }
