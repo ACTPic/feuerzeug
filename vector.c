@@ -9,9 +9,9 @@
 #define DEBUG printf("\n---DEBUG---\n");
 
 /* ********************************************* */
-/* delete löscht ein element vom stapel  */
+/* delete lÃ¶scht ein element vom stapel  */
 /* return 1 wenn stack leer, 0 wenn IO           */
-/* übergabewert: ein element des stapels         */
+/* Ã¼bergabewert: ein element des stapels         */
 /* ********************************************* */
 int vector_delete(struct vector *v, struct node *n)
 {
@@ -34,8 +34,8 @@ int vector_delete(struct vector *v, struct node *n)
 /* ********************************************* */
 /* clear gibt stapelspeicher komplett frei       */
 /* return 0 wenn I.O.                            */
-/* übergabe: ein element des stapels             */
-/* umbauen, dass man den zu löschenden Vektor angibt, und nicht ein element */
+/* Ã¼bergabe: ein element des stapels             */
+/* umbauen, dass man den zu lÃ¶schenden Vektor angibt, und nicht ein element */
 /* ********************************************* */
 int vector_destroy(struct vector *stapel)
 {
@@ -62,31 +62,31 @@ int vector_destroy(struct vector *stapel)
 int debug(struct vector *v)
 {
 	struct node *elem;
-	assert(v != NULL);
-	printf("\nKompletter Vektor mit Inhalt:\n");
-	if (v->head == NULL)
-		printf("Vektor ist leer.\n");
+	assert(v);
+	printf("\nÂ· Vector:\n");
+	if (!v->head)
+		printf("       [leer]\n");
 	elem = v->head;
-	while (elem != NULL) {
+	while (elem) {
 		assert(elem->type < 20);
-		// printf("%0xd\t'%s'\t-> %0xd\t<-%0xd\n",elem,elem->content,elem->next,elem->prev);
+                printf("       ");
 		switch (elem->type) {
 		case BF_TYPE_INT:
-			printf("%i: %s - %i\n", elem->type, elem->name,
+			printf("int:   %11s â†’ %i\n", elem->name,
 			       node_toInt(node_copy(elem)));
 			break;
 		case BF_TYPE_FLOAT:
-			printf("%i: %s - %g\n", elem->type, elem->name,
+			printf("float: %11s â†’ %g\n", elem->name,
 			       node_toFloat(node_copy(elem)));
 			break;
 		case BF_TYPE_STRING:
 		case BF_TYPE_C_TEXT:
-			printf("%i: %s - %s\n", elem->type, elem->name,
+			printf("str:   %11s â†’ â€ž%sâ€œ\n", elem->name,
 			       (char *) elem->content);
 			break;
 		default:
-			printf("%i: %s - nicht darstellbar\n", elem->type,
-			       elem->name);
+			printf("%6d: â€ž%sâ€œ â†’ ??? [%09lx]\n", elem->type,
+			       elem->name, (unsigned long)elem->content);
 			break;
 		}
 		assert(elem != elem->next);
@@ -131,7 +131,7 @@ struct node *vector_bottom(struct vector *v)
 /* push legt ein neues element mit inhalt buffer    */
 /* auf den stapel                                   */
 /* return 0 wenn I.O.                               */
-/* übergabe: element der liste und *buffer (string) */
+/* Ã¼bergabe: element der liste und *buffer (string) */
 /* ************************************************ */
 int vector_push(struct vector *v, struct node *n)
 {
@@ -233,7 +233,7 @@ int vector_push_db(struct vector *v, struct db *content)
  * unshift legt ein neues element mit inhalt buffer
  * unter den stapel
  * return 1 wenn I.O.
- * übergabe: element der liste und *buffer (string)
+ * Ã¼bergabe: element der liste und *buffer (string)
  * ************************************************ */
 int vector_unshift(struct vector *v, struct node *n)
 {
@@ -341,8 +341,8 @@ struct node *vector_shift(struct vector *v)
 
 
 /*********************************
- * Lädt einen Node aus einem Vektor anhand seines Namens, ohne ihn
- * zu löschen
+ * LÃ¤dt einen Node aus einem Vektor anhand seines Namens, ohne ihn
+ * zu lÃ¶schen
  *********************************/
 struct node *vector_pick(struct vector *v, char *name)
 {
@@ -400,7 +400,7 @@ struct node *vector_pick_node(struct vector *v, char *name)
 
 
 /*************************************
- * Lädt einen Node aus einem Vektor anhand seines Namens und löscht iht
+ * LÃ¤dt einen Node aus einem Vektor anhand seines Namens und lÃ¶scht iht
  *************************************/
 struct node *vector_get(struct vector *v, char *name)
 {
@@ -442,7 +442,7 @@ int vector_get_int(struct vector *v, char *name)
 
 
 /*************************************
- * Hängt genauso wie push einen Node hinten an den Vektor an, wobei hier
+ * HÃ¤ngt genauso wie push einen Node hinten an den Vektor an, wobei hier
  * der Node noch einen Namen bekommt
  */
 int vector_put(struct vector *v, char *name, struct node *n)
@@ -488,7 +488,7 @@ int vector_replace(struct vector *v, char *name, struct node *n)
 	assert(n != NULL);
 	temp = vector_pick(v, name);
 	if (temp) {
-		// Ein zu ersetzender Knoten gefunden, nun Referenzen umhängen
+		// Ein zu ersetzender Knoten gefunden, nun Referenzen umhÃ¤ngen
 		if (v->head == temp)
 			v->head = n;
 		if (v->tail == temp)
@@ -546,7 +546,7 @@ int vector_replace_node(struct vector *v, char *name, struct node *content)
 }
 
 /*******************
- * fügt einen Node nach einem gegebenen Node ein
+ * fÃ¼gt einen Node nach einem gegebenen Node ein
  ******************/
 int vector_insert(struct vector *v, struct node *n, struct node *new)
 {
@@ -564,7 +564,7 @@ int vector_insert(struct vector *v, struct node *n, struct node *new)
 
 
 /* ***************************************** */
-/* empty prüft ob elemente im stapel liegen  */
+/* empty prÃ¼ft ob elemente im stapel liegen  */
 /* return 1: stapel ist LEER                 */
 /* return 0; stapel ist NICHT leer           */
 /* uebergabe: ein element vom stapel         */
