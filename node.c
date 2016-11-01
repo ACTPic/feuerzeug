@@ -194,7 +194,7 @@ char *node_toString(struct node *n)
 		node_destroy(n);
 		break;
 	case BF_TYPE_DB:
-		r = malloc(strlen("db" + 1));
+		r = malloc(strlen("db") + 1);
 		strcpy(r, "db");
 		node_destroy(n);
 		break;
