@@ -1,3 +1,6 @@
+#include <stdio.h>
+#include "vector.h"
+
 extern struct vector *cdb_load(char *name);
 extern struct vector *sql_load(char *name);
 
