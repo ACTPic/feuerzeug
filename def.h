@@ -20,7 +20,8 @@
 
 // Generische Struktur für alle unterstützten Datenbanken
 struct db {
-        char *query;
+	char *query;
+	char *field;
 	MYSQL_RES *mysql_res;
 };
 

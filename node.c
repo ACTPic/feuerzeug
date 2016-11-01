@@ -86,14 +86,18 @@ int node_destroy(struct node *n)
 		node_destroy((struct node *) n->content);
 		break;
 	case BF_TYPE_DB:
-        {
-                struct db *tmp = n->content;
-                assert(tmp);
-                MYSQL_RES *res = tmp->mysql_res;
-                assert(res);
-                mysql_free_result(res);
-                break;
-        }
+		{
+			struct db *tmp = n->content;
+			assert(tmp);
+			MYSQL_RES *res = tmp->mysql_res;
+			if (res)
+				mysql_free_result(res);
+			if (tmp->query)
+				free(tmp->query);
+			if (tmp->field)
+				free(tmp->field);
+			break;
+		}
 	case BF_TYPE_POINTER:
 		// nichts loeschen, der node hier gehoert ja wem anders
 		break;
