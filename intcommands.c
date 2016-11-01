@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include <stdio.h>
 #include <time.h>
 #include <math.h>
@@ -893,39 +894,45 @@ void bf_c_strlen()
 
 void bf_c_sql_query()
 {
-	MYSQL *mysql;
-	if (accesslevel < 3)
-		mysql = &mysql_write;
-	else
-		mysql = &mysql_read;
-
 	char *query = vector_pop_string(dstack);
 	assert(query);
 
-	MYSQL_RES *res = 0;
 
-	if (mysql_real_query(mysql, query, strlen(query))) {
+	MYSQL *mysql = 0;
+	if (tolower(query[0]) == 's' && tolower(query[1]) == 'e' &&
+	    tolower(query[2]) == 'l' && tolower(query[3]) == 'e')
+		mysql = &mysql_read;
+
+	// Schreiben momentan nur simulieren
+	if (!mysql)
+		printf("✝ „%s“\n", query);
+
+	if (mysql && mysql_real_query(mysql, query, strlen(query))) {
 		printf("bf_c_sql_query „%s“ fehlgeschlagen.\n", query);
-	} else if ((res = mysql_store_result(mysql))) {
-		// Lesezugriff (SELECT)
-		struct db *db = malloc(sizeof(struct db));
-		assert(db);
-		memset(db, 0, sizeof(struct db));
-		db->mysql_res = res;
-                db->query = malloc(strlen(query)+1);
-                assert(db->query);
-                strcpy(db->query, query);
-		vector_push_db(dstack, db);
-	} else {
-		// Schreibzugriff (INSERT, REPLACE, usw.)
+		goto end;
 	}
+
+	MYSQL_RES *res = mysql ? mysql_store_result(mysql) : 0;
+
+	if (!res)
+		goto end;
+
+	struct db *db = malloc(sizeof(struct db));
+	assert(db);
+	memset(db, 0, sizeof(struct db));
+	db->mysql_res = res;
+	db->query = malloc(strlen(query) + 1);
+	assert(db->query);
+	strcpy(db->query, query);
+	vector_push_db(dstack, db);
+      end:
 	free(query);
 }
 
 void bf_c_sql_fetch()
 {
 	struct db *db = vector_pop_db(dstack);
-        assert(db);
+	assert(db);
 	MYSQL_RES *res = db->mysql_res;
 
 	if (!res) {
@@ -957,15 +964,15 @@ void bf_c_sql_fetch()
 		vector_push(v, n);
 	}
 
-        assert(db->query);
-        char *query = malloc(strlen(db->query)+1);
-        assert(query);
-        strcpy(query, db->query);
+	assert(db->query);
+	char *query = malloc(strlen(db->query) + 1);
+	assert(query);
+	strcpy(query, db->query);
 
 	db = malloc(sizeof(struct db));
 	assert(db);
 	memset(db, 0, sizeof(struct db));
-        db->query = query;
+	db->query = query;
 	db->mysql_res = res;
 
 	vector_push_db(dstack, db);
@@ -999,9 +1006,9 @@ void bf_c_sql_freeres()
 	MYSQL_RES *res = db->mysql_res;
 	assert(res);
 	mysql_free_result(res);
-        assert(db->query);
-        free(db->query);
-        free(db);
+	assert(db->query);
+	free(db->query);
+	free(db);
 }
 
 void bf_c_sql_escape()
