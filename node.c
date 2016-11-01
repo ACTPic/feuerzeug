@@ -94,8 +94,10 @@ int node_destroy(struct node *n)
 				mysql_free_result(res);
 			if (tmp->query)
 				free(tmp->query);
-			if (tmp->field)
-				free(tmp->field);
+			if (tmp->field_r)
+				free(tmp->field_r);
+			if (tmp->field_w)
+				free(tmp->field_w);
 			break;
 		}
 	case BF_TYPE_POINTER:
