@@ -892,11 +892,41 @@ void bf_c_strlen()
 
 /******************** mysql ***********************/
 
+static char ripple[1024];
+
+char *rip_query(char *orig_query)
+{
+	assert(orig_query);
+	assert(strlen(orig_query) + 1 < 1023);
+
+	char *buf = ripple;
+	char *s = orig_query, *p = buf;
+	char last = 0;
+	while (*s) {
+		if (last == '/' && *s == '/')
+			s++;
+		last = *s;
+		*p++ = tolower(*s++);
+	}
+	*p = 0;
+	size_t sq = strlen("select * from calc where eintrag='");
+	if (!strncmp(buf, "select * from calc where eintrag='", sq)) {
+		p = buf + sq;
+		if (p[strlen(p) - 1] == '\'')
+			p[strlen(p) - 1] = 0;
+		while (*p && p[strlen(p) - 1] == '/')
+			p[strlen(p) - 1] = 0;
+		return p;
+	} else {
+		printf("Unsupported SQL-Query: „%s“\n", buf);
+		return 0;
+	}
+}
+
 void bf_c_sql_query()
 {
 	char *query = vector_pop_string(dstack);
 	assert(query);
-
 
 	MYSQL *mysql = 0;
 	if (tolower(query[0]) == 's' && tolower(query[1]) == 'e' &&
@@ -935,6 +965,9 @@ void bf_c_sql_fetch()
 	assert(db);
 	MYSQL_RES *res = db->mysql_res;
 
+	char *query = db->query;
+	printf("✈ „%s“\n", query);
+
 	if (!res) {
 		printf
 		    ("bf_c_sql_fetch: Keine Datenbank auf dem Stapel gefunden.\n");
@@ -965,7 +998,7 @@ void bf_c_sql_fetch()
 	}
 
 	assert(db->query);
-	char *query = malloc(strlen(db->query) + 1);
+	query = malloc(strlen(db->query) + 1);
 	assert(query);
 	strcpy(query, db->query);
 
