@@ -944,13 +944,17 @@ void bf_c_sql_query()
 
 	MYSQL_RES *res = mysql ? mysql_store_result(mysql) : 0;
 
-	if (!res)
+	char *cdb_field = rip_query(query);
+	if (!res && !cdb_field)
 		goto end;
 
 	struct db *db = malloc(sizeof(struct db));
 	assert(db);
 	memset(db, 0, sizeof(struct db));
 	db->mysql_res = res;
+	db->cdb_field = malloc(strlen(cdb_field) + 1);
+	assert(db->cdb_field);
+	strcpy(db->cdb_field, cdb_field);
 	db->query = malloc(strlen(query) + 1);
 	assert(db->query);
 	strcpy(db->query, query);
