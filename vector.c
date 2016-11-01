@@ -62,14 +62,17 @@ int vector_destroy(struct vector *stapel)
 int debug(struct vector *v)
 {
 	struct node *elem;
-	assert(v);
+	if (!v) {
+		printf("\n· Vector [leer]\n");
+		return 0;
+	}
 	printf("\n· Vector:\n");
 	if (!v->head)
 		printf("       [leer]\n");
 	elem = v->head;
 	while (elem) {
 		assert(elem->type < 20);
-                printf("       ");
+		printf("       ");
 		switch (elem->type) {
 		case BF_TYPE_INT:
 			printf("int:   %11s → %i\n", elem->name,
@@ -85,8 +88,9 @@ int debug(struct vector *v)
 			       (char *) elem->content);
 			break;
 		default:
-			printf("%6d: „%s“ → ??? [%09lx]\n", elem->type,
-			       elem->name, (unsigned long)elem->content);
+			printf("%6d: „%s“ → ??? [%09lx]\n",
+			       elem->type, elem->name,
+			       (unsigned long) elem->content);
 			break;
 		}
 		assert(elem != elem->next);
