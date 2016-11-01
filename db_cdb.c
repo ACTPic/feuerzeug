@@ -37,7 +37,11 @@ void build_node(char *name, struct vector *v, char *sub)
 
 	char *val = cdballoc(key);
 	if (val) {
-		struct node *node = node_create(val, BF_TYPE_STRING);
+		struct node *node;
+		if (!strcmp(sub, "auth"))
+			node = node_create("0", BF_TYPE_STRING);
+		else
+			node = node_create(val, BF_TYPE_STRING);
 		vector_put(v, sub, node);
 	}
 }
