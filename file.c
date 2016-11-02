@@ -7,6 +7,7 @@
 extern struct vector *cdb_load(char *name);
 extern struct vector *sql_load(char *name);
 
+// Zum Debuggen
 bool vector_str_equal(struct vector *v0, struct vector *v1)
 {
 	if (!v0 && !v1)
@@ -37,20 +38,23 @@ bool vector_str_equal(struct vector *v0, struct vector *v1)
 
 struct vector *load_file(char *name)
 {
-	struct vector *v_sql, *v_cdb;
+//      struct vector *v_sql;
+	struct vector *v_cdb;
 
-	v_sql = sql_load(name);
+//      v_sql = sql_load(name);
 	v_cdb = cdb_load(name);
 
-	if (vector_str_equal(v_cdb, v_sql))
-		puts("CDB==SQL");
-	else {
-		puts("CDB!=SQL");
-		puts("CDB:");
-		debug(v_cdb);
-		puts("SQL:");
-		debug(v_sql);
-	}
+	/*
+	   if (vector_str_equal(v_cdb, v_sql))
+	   puts("CDB==SQL");
+	   else {
+	   puts("CDB!=SQL");
+	   puts("CDB:");
+	   debug(v_cdb);
+	   puts("SQL:");
+	   debug(v_sql);
+	   }
+	 */
 
 	return v_cdb;
 }
