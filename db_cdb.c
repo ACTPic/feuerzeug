@@ -1,4 +1,5 @@
 #include <cdb.h>
+#include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
 #include "def.h"
@@ -31,7 +32,10 @@ void build_node(char *name, struct vector *v, char *sub)
 	}
 
 	char key[strlen(name) + strlen("/") + strlen(sub) + 1];
-	strcpy(key, name);
+	char *p = key, *n = name;
+	while (*n)
+		*p++ = tolower(*n++);
+	*p = 0;
 	strcat(key, "/");
 	strcat(key, sub);
 
@@ -53,9 +57,13 @@ void build_node(char *name, struct vector *v, char *sub)
 struct vector *cdb_load(char *name)
 {
 	char key[strlen(name) + strlen("/") + strlen("bot") + 1];
-	strcpy(key, name);
+	char *p = key, *n = name;
+	while (*n)
+		*p++ = tolower(*n++);
+	*p = 0;
 	strcat(key, "/");
 	strcat(key, "bot");
+
 	int cdbret = cdb_find(&cdb, key, strlen(key));
 	assert(cdbret != -1);
 	if (!cdbret)
