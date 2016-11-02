@@ -937,21 +937,23 @@ void bf_c_sql_query()
 	if (!mysql)
 		printf("✝ „%s“\n", query);
 
-	if (mysql && mysql_real_query(mysql, query, strlen(query))) {
-		printf("bf_c_sql_query „%s“ fehlgeschlagen.\n", query);
-		goto end;
-	}
+	/*
+	   if (mysql && mysql_real_query(mysql, query, strlen(query))) {
+	   printf("bf_c_sql_query „%s“ fehlgeschlagen.\n", query);
+	   goto end;
+	   }
 
-	MYSQL_RES *res = mysql ? mysql_store_result(mysql) : 0;
+	   MYSQL_RES *res = mysql ? mysql_store_result(mysql) : 0;
+	 */
 
 	char *cdb_field = rip_query(query);
-	if (!res && !cdb_field)
+	if (!cdb_field)
 		goto end;
 
 	struct db *db = malloc(sizeof(struct db));
 	assert(db);
 	memset(db, 0, sizeof(struct db));
-	db->mysql_res = res;
+	db->mysql_res = 0;
 	db->cdb_field = malloc(strlen(cdb_field) + 1);
 	assert(db->cdb_field);
 	strcpy(db->cdb_field, cdb_field);
@@ -967,16 +969,18 @@ void bf_c_sql_fetch()
 {
 	struct db *db = vector_pop_db(dstack);
 	assert(db);
-	MYSQL_RES *res = db->mysql_res;
+//      MYSQL_RES *res = db->mysql_res;
 
 	char *query = db->query;
 	printf("✈ „%s“\n", query);
 
-	if (!res) {
-		printf
-		    ("bf_c_sql_fetch: Keine Datenbank auf dem Stapel gefunden.\n");
-		return;
-	}
+	/*
+	   if (!res) {
+	   printf
+	   ("bf_c_sql_fetch: Keine Datenbank auf dem Stapel gefunden.\n");
+	   return;
+	   }
+	 */
 
 	struct vector *v = load_file(db->cdb_field);
 
@@ -989,7 +993,7 @@ void bf_c_sql_fetch()
 	assert(db);
 	memset(db, 0, sizeof(struct db));
 	db->query = query;
-	db->mysql_res = res;
+	db->mysql_res = 0;
 
 	vector_push_db(dstack, db);
 	if (v)

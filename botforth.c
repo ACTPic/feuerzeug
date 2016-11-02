@@ -42,7 +42,7 @@ char *infoblock_get_name(struct vector *word)
 	return infoblock->head->next->content;
 }
 
-void infoblock_set_name(struct vector * word, char *name)
+void infoblock_set_name(struct vector *word, char *name)
 {
 	struct vector *infoblock;
 	assert(word);
@@ -478,8 +478,8 @@ struct vector *word_load(char *name, char *ns)
 			buffer =
 			    malloc(10 + strlen(lex->content) +
 				   strlen(name));
-			sprintf(buffer, "command/%s/%s", (char *)lex->content,
-				name);
+			sprintf(buffer, "command/%s/%s",
+				(char *) lex->content, name);
 			tmpns = lex->content;
 		} else {
 			// only use given namespace
@@ -602,11 +602,11 @@ void botforth_replaceword(struct vector *program)
 	struct vector *newprogram;
 	// Programmname ermitteln
 	cachename =
-	    (char *) ((struct vector *) program->head->content)->head->
-	    next->next->next->content;
+	    (char *) ((struct vector *) program->head->content)->
+	    head->next->next->next->content;
 	shortname =
-	    (char *) ((struct vector *) program->head->content)->head->
-	    next->content;
+	    (char *) ((struct vector *) program->head->content)->
+	    head->next->content;
 	printf("name des zu ersetzenden programs %s bzw. %s\n", cachename,
 	       shortname);
 	// den kompletten Cache-Eintrag zu dem Programm laden
@@ -621,8 +621,8 @@ void botforth_replaceword(struct vector *program)
 	if (newprogram) {
 		// wort existiert noch auf platte
 		newcachename =
-		    (char *) ((struct vector *) program->head->content)->
-		    head->next->next->next->content;
+		    (char *) ((struct vector *) program->head->
+			      content)->head->next->next->next->content;
 		// word_load hat das neue wort auch in den cache geworfen
 		newcache = vector_pick(words, newcachename);
 		assert(newcache != NULL);
@@ -665,8 +665,8 @@ void botforth_call(struct vector *program)
 	vector_push_vector(rstack, cword);
 	vector_push_int(rstack, accesslevel);
 	// soll das programm aus dem cache entfernt werden?
-	if (*(int *) ((struct vector *) program->head->content)->head->
-	    next->next->content == 1) {
+	if (*(int *) ((struct vector *) program->head->content)->
+	    head->next->next->content == 1) {
 		printf("aufruf eines zu loeschenden programms\n");
 		botforth_replaceword(program);
 	}
@@ -684,7 +684,7 @@ void botforth_return()
 	int oldaccesslevel;
 	// todo: speicherleck vielleicht irgendwie?
 	oldaccesslevel = vector_pop_int(rstack);
-        (void)oldaccesslevel;  // Warnung unterdrücken
+	(void) oldaccesslevel;	// Warnung unterdrücken
 	cword = vector_pop_vector(rstack);
 	pc = vector_pop_node(rstack);
 	if (cword)
@@ -763,15 +763,15 @@ void botforth_interpreter(struct vector *program, int withinfoblock)
 		case BF_TYPE_C_EXT:	// Externer Befehl
 			//printf("externer befehl\n");
 			if (rstack->size < 8000) {
-				botforth_call((struct vector *) c->
-					      content);
+				botforth_call((struct vector *)
+					      c->content);
 			} else {
 				printf("RSTACK UEBERGELAUFEN!\n");
 			}
 			break;
 		case BF_TYPE_STRING:	// String
 			temp = malloc(strlen(c->content) + 1);
-			sprintf(temp, "%s", (char *)c->content);
+			sprintf(temp, "%s", (char *) c->content);
 			tempnode = node_create(temp, c->type);
 			vector_push(dstack, tempnode);
 			break;
@@ -801,9 +801,9 @@ struct vector *botforth_compile(struct vector *word)
 {
 	struct node *n, *newn, *cn, *newcn;
 	char *buffer;
-//	char *text;
+//      char *text;
 	struct vector *compword;
-//	struct vector *ncstack;
+//      struct vector *ncstack;
 	struct vector *nword = vector_create();
 	printf("starte compiler\n");
 	assert(cstack != NULL);
@@ -848,7 +848,7 @@ struct vector *botforth_compile(struct vector *word)
 				if (compword) {
 					assert(compword->head != NULL);	// todo: das sollte weg, leere programme sind ok
 					printf("kompiliere %s\n",
-					       (char *)n->content);
+					       (char *) n->content);
 					// save the environment to estack
 					assert(cstack != NULL);
 					vector_push_vector(estack, cstack);
@@ -920,42 +920,44 @@ int main(int argc, char **argv)
 	// zufall initialisieren
 	srand(time(NULL));
 
-	// mysql-verbindung aufbauen
-	mysql_init(&mysql_read);
-	if (!mysql_real_connect
-	    (&mysql_read, "127.0.0.1", "feuerzeugread", "amoklauf", NULL,
-	     0, NULL, 0)) {
-		printf("mysql read verbindungsaufbau gescheitert.\n");
-		//ptr = mysql_error(&mysql);
-		//problem(ptr);
-		exit(1);
-	}
-	// Datenbank auswaehlen
-	if (mysql_select_db(&mysql_read, "calc")) {
-		printf("mysql read datenbankwahl gescheitert.\n");
-		exit(1);
-	}
-	mysql_init(&mysql_write);
-	if (!mysql_real_connect
-	    (&mysql_write, "127.0.0.1", "feuerzeug", "slightomat", NULL, 0,
-	     NULL, 0)) {
-		printf("mysql write verbindungsaufbau gescheitert.\n");
-		//ptr = mysql_error(&mysql);
-		//problem(ptr);
-		exit(1);
-	}
-	// Datenbank auswaehlen
-	if (mysql_select_db(&mysql_write, "calc")) {
-		printf("mysql write datenbankwahl gescheitert.\n");
-		exit(1);
-	}
+	/*
+	   // mysql-verbindung aufbauen
+	   mysql_init(&mysql_read);
+	   if (!mysql_real_connect
+	   (&mysql_read, "127.0.0.1", "feuerzeugread", "amoklauf", NULL,
+	   0, NULL, 0)) {
+	   printf("mysql read verbindungsaufbau gescheitert.\n");
+	   //ptr = mysql_error(&mysql);
+	   //problem(ptr);
+	   exit(1);
+	   }
+	   // Datenbank auswaehlen
+	   if (mysql_select_db(&mysql_read, "calc")) {
+	   printf("mysql read datenbankwahl gescheitert.\n");
+	   exit(1);
+	   }
+	   mysql_init(&mysql_write);
+	   if (!mysql_real_connect
+	   (&mysql_write, "127.0.0.1", "feuerzeug", "slightomat", NULL, 0,
+	   NULL, 0)) {
+	   printf("mysql write verbindungsaufbau gescheitert.\n");
+	   //ptr = mysql_error(&mysql);
+	   //problem(ptr);
+	   exit(1);
+	   }
+	   // Datenbank auswaehlen
+	   if (mysql_select_db(&mysql_write, "calc")) {
+	   printf("mysql write datenbankwahl gescheitert.\n");
+	   exit(1);
+	   }
+	 */
 
-        int fd = open("calc.cdb", O_RDONLY);
-        if(fd == -1) {
-                perror("open");
-                exit(EXIT_FAILURE);
-        }
-        cdb_init(&cdb, fd);
+	int fd = open("calc.cdb", O_RDONLY);
+	if (fd == -1) {
+		perror("open");
+		exit(EXIT_FAILURE);
+	}
+	cdb_init(&cdb, fd);
 
 	// push parameters to dstack
 	for (i = 1; i < argc; i++) {
@@ -967,13 +969,13 @@ int main(int argc, char **argv)
 	// set lexicon
 	//temp=malloc(5); sprintf(temp,"dope");
 	//vector_push_string(lexicon,temp);
-	temp = malloc(strlen("lib")+1);
+	temp = malloc(strlen("lib") + 1);
 	sprintf(temp, "lib");
 	vector_push_string(lexicon, temp);
-	temp = malloc(strlen("service")+1);
+	temp = malloc(strlen("service") + 1);
 	sprintf(temp, "service");
 	vector_push_string(lexicon, temp);
-	temp = malloc(strlen("bot")+1);
+	temp = malloc(strlen("bot") + 1);
 	sprintf(temp, "bot");
 	vector_push_string(lexicon, temp);
 
@@ -983,5 +985,5 @@ int main(int argc, char **argv)
 	printf("Datenstapel: ");
 	debug(dstack);
 
-        return 0;
+	return 0;
 }
