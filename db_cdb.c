@@ -48,6 +48,15 @@ void build_node(char *name, struct vector *v, char *sub)
 
 struct vector *cdb_load(char *name)
 {
+	char key[strlen(name) + strlen("/") + strlen("bot") + 1];
+	strcpy(key, name);
+	strcat(key, "/");
+	strcat(key, "bot");
+	int cdbret = cdb_find(&cdb, key, strlen(key));
+	assert(cdbret != -1);
+	if (!cdbret)
+		return 0;
+
 	struct vector *vc = vector_create();
 	build_node(name, vc, "auth");
 	build_node(name, vc, "name");
