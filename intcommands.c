@@ -978,28 +978,7 @@ void bf_c_sql_fetch()
 		return;
 	}
 
-	MYSQL_ROW row = mysql_fetch_row(res);
-	if (!row) {
-		vector_push_db(dstack, db);
-		return;
-	}
-
-	struct vector *v = vector_create();
-	for (unsigned i = 0; i < mysql_num_fields(res); i++) {
-		if (!row[i])
-			continue;
-
-		MYSQL_FIELD *fld = mysql_fetch_field_direct(res, i);
-		char *buf = malloc(strlen(row[i]) + 1);
-		assert(buf);
-		strcpy(buf, row[i]);
-		struct node *n;
-		n = node_create(buf, BF_TYPE_STRING);
-		char *buf2 = malloc(strlen(fld->name) + 1);
-		strcpy(buf2, fld->name);
-		n->name = buf2;
-		vector_push(v, n);
-	}
+	struct vector *v = load_file(db->cdb_field);
 
 	assert(db->query);
 	query = malloc(strlen(db->query) + 1);
@@ -1013,7 +992,8 @@ void bf_c_sql_fetch()
 	db->mysql_res = res;
 
 	vector_push_db(dstack, db);
-	vector_push_vector(dstack, v);
+	if (v)
+		vector_push_vector(dstack, v);
 }
 
 void bf_c_sql_numrows()
