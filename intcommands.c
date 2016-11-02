@@ -892,12 +892,12 @@ void bf_c_strlen()
 
 /******************** mysql ***********************/
 
-static char ripple[1024];
+static char ripple[16384];
 
 char *rip_query(char *orig_query)
 {
 	assert(orig_query);
-	assert(strlen(orig_query) + 1 < 1023);
+	assert(strlen(orig_query) + 1 < 16383);
 
 	char *buf = ripple;
 	char *s = orig_query, *p = buf;
