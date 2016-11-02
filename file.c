@@ -22,9 +22,11 @@ bool vector_str_equal(struct vector *v0, struct vector *v1)
 	while (elem0 && elem1) {
 		char *c0 = elem0->content;
 		char *c1 = elem1->content;
-		if (strcmp(c0, c1))
+		if (strcmp(c0, c1)) {
+			printf("\n⋄%s\n„%s“\n⚡%s\n„%s“\n",
+			       elem0->name, c0, elem1->name, c1);
 			return false;
-
+		}
 		elem0 = elem0->next;
 		elem1 = elem1->next;
 	}
@@ -40,12 +42,12 @@ struct vector *load_file(char *name)
 	v_sql = sql_load(name);
 	v_cdb = cdb_load(name);
 
-	if (vector_str_equal(v_sql, v_cdb))
+	if (vector_str_equal(v_cdb, v_sql))
 		puts("CDB==SQL");
 	else {
-		puts("ø CDB");
+		puts("CDB:");
 		debug(v_cdb);
-		puts("ø SQL");
+		puts("SQL:");
 		debug(v_sql);
 	}
 
