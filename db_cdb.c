@@ -38,11 +38,13 @@ void build_node(char *name, struct vector *v, char *sub)
 	char *val = cdballoc(key);
 	if (val) {
 		struct node *node;
-		if (!strcmp(sub, "auth"))
-			node = node_create("0", BF_TYPE_STRING);
-		else if (!strcmp(sub, "type") && !*val)
-			node = node_create("0", BF_TYPE_STRING);
-		else
+		if (!strcmp(sub, "auth") ||
+		    (!strcmp(sub, "type") && !*val)) {
+			char *nil = malloc(1 + 1);
+			assert(nil);
+			strcpy(nil, "0");
+			node = node_create(nil, BF_TYPE_STRING);
+		} else
 			node = node_create(val, BF_TYPE_STRING);
 		vector_put(v, sub, node);
 	}
