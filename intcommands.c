@@ -1004,10 +1004,25 @@ void bf_c_sql_numrows()
 		    ("bf_c_sql_numrows: Keine Datenbank auf dem Stapel gefunden.\n");
 		return;
 	}
-	MYSQL_RES *res = db->mysql_res;
-	assert(res);
+	/*
+	   MYSQL_RES *res = db->mysql_res;
+	   assert(res);
+	   int numrows = mysql_num_rows(res);
+	 */
 
-	int numrows = mysql_num_rows(res);
+	char key[strlen(db->cdb_field) + strlen("/") + strlen("bot") + 1];
+	char *p = key, *n = db->cdb_field;
+	while (*n)
+		*p++ = tolower(*n++);
+	*p = 0;
+	strcat(key, "/");
+	strcat(key, "bot");
+
+	int cdbret = cdb_find(&cdb, key, strlen(key));
+	assert(cdbret != -1);
+
+	int numrows = cdbret ? 1 : 0;
+
 	vector_push_db(dstack, db);
 	vector_push_int(dstack, numrows ? 1 : 0);
 }
