@@ -45,6 +45,7 @@ struct vector *load_file(char *name)
 	if (vector_str_equal(v_cdb, v_sql))
 		puts("CDB==SQL");
 	else {
+		puts("CDB!=SQL");
 		puts("CDB:");
 		debug(v_cdb);
 		puts("SQL:");
