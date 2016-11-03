@@ -78,6 +78,8 @@ int connect_irc(int port, char *ipnum)
 // 
 int connect_irc6(int port, char *ipnum)
 {
+        return -1;  // FIXME
+
 	int create_socket = 0;
 	struct sockaddr_in6 address;
 
@@ -133,7 +135,7 @@ int netsend(int socketnum, char *msg)
 
 	len = strlen(msg);
 	assert(len > 0 && len <= LINELENGTH);
-	assert(socketnum > 0);
+	//assert(socketnum > 0);
 
 	if (len <= 1) {
 		fprintf(stderr,
@@ -181,7 +183,7 @@ char *netrecv(int socketnum)
 	char *a;
 	int i = 0;
 
-	assert(socketnum > 0);
+//	assert(socketnum > 0);
 	a = malloc(sizeof(char));
 
 	buffer[0] = '\0';
@@ -237,10 +239,11 @@ int resolve_ircd(char *host, int port)
 	struct hostent *he;
 //	struct in6_addr addr6;
 	struct in_addr addr;
-	char ipv6[INET6_ADDRSTRLEN];
+//	char ipv6[INET6_ADDRSTRLEN];
 
 	printf("Resolving host: %s\n", host);
 
+        /*
 	// Resolve IPv6
 	he = gethostbyname2(host, AF_INET6);
 	//he=NULL;
@@ -255,6 +258,7 @@ int resolve_ircd(char *host, int port)
 		     host, ipv6);
 		return (connect_irc6(port, ipv6));
 	}
+        */
 	// Resolve IPv4
 	he = gethostbyname(host);
 	if (he == NULL)
