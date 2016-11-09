@@ -18,6 +18,9 @@ MYSQL_ROW row;
 // CDB-Krempel
 struct cdb cdb;
 
+// Berkeley-DB-Krempel
+extern void bdb_init();
+
 int infoblock_get_accesslevel(struct vector *word)
 {
 	struct vector *infoblock;
@@ -958,6 +961,8 @@ int main(int argc, char **argv)
 		exit(EXIT_FAILURE);
 	}
 	cdb_init(&cdb, fd);
+
+        bdb_init();
 
 	// push parameters to dstack
 	for (i = 1; i < argc; i++) {
