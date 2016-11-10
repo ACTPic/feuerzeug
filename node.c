@@ -89,13 +89,10 @@ int node_destroy(struct node *n)
 		{
 			struct db *tmp = n->content;
 			assert(tmp);
-			MYSQL_RES *res = tmp->mysql_res;
-			if (res)
-				mysql_free_result(res);
 			if (tmp->query)
 				free(tmp->query);
-			if (tmp->cdb_field)
-				free(tmp->cdb_field);
+			if (tmp->db_field)
+				free(tmp->db_field);
 			break;
 		}
 	case BF_TYPE_POINTER:

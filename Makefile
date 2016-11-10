@@ -1,8 +1,8 @@
 CC = gcc
-CFLAGS = -g -D_GNU_SOURCE -std=gnu11 -O0 -Og -Wall -Wextra -Werror -L/usr/include/mysql
+CFLAGS = -g -D_GNU_SOURCE -std=gnu11 -O0 -Og -Wall -Wextra -Werror
 
-LIBS = -lmysqlclient -lz -lm -lcdb -ldb
-OBJECTS = vector.o node.o intcommands.o file.o db_cdb.o db_bdb.o db_mysql.o com.o botforth.o
+LIBS = -lz -lm -lcdb -ldb
+OBJECTS = vector.o node.o intcommands.o file.o db_cdb.o db_bdb.o com.o botforth.o
 HEADERS = def.h botforth.h com.h node.h vector.h
 
 all: botforth

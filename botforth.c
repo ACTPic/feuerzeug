@@ -8,13 +8,6 @@
 #include <string.h>
 #include "botforth.h"
 
-// MySQL-Krempel
-MYSQL_FIELD *fld;
-MYSQL mysql_read;
-MYSQL mysql_write;
-MYSQL_RES *res;
-MYSQL_ROW row;
-
 // CDB-Krempel
 struct cdb cdb;
 
@@ -922,38 +915,6 @@ int main(int argc, char **argv)
 	interpretcounter = 0;
 	// zufall initialisieren
 	srand(time(NULL));
-
-	/*
-	   // mysql-verbindung aufbauen
-	   mysql_init(&mysql_read);
-	   if (!mysql_real_connect
-	   (&mysql_read, "127.0.0.1", "feuerzeugread", "amoklauf", NULL,
-	   0, NULL, 0)) {
-	   printf("mysql read verbindungsaufbau gescheitert.\n");
-	   //ptr = mysql_error(&mysql);
-	   //problem(ptr);
-	   exit(1);
-	   }
-	   // Datenbank auswaehlen
-	   if (mysql_select_db(&mysql_read, "calc")) {
-	   printf("mysql read datenbankwahl gescheitert.\n");
-	   exit(1);
-	   }
-	   mysql_init(&mysql_write);
-	   if (!mysql_real_connect
-	   (&mysql_write, "127.0.0.1", "feuerzeug", "slightomat", NULL, 0,
-	   NULL, 0)) {
-	   printf("mysql write verbindungsaufbau gescheitert.\n");
-	   //ptr = mysql_error(&mysql);
-	   //problem(ptr);
-	   exit(1);
-	   }
-	   // Datenbank auswaehlen
-	   if (mysql_select_db(&mysql_write, "calc")) {
-	   printf("mysql write datenbankwahl gescheitert.\n");
-	   exit(1);
-	   }
-	 */
 
 	int fd = open("calc.cdb", O_RDONLY);
 	if (fd == -1) {

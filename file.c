@@ -4,9 +4,8 @@
 #include "node.h"
 #include "vector.h"
 
-extern struct vector *bdb_load(char *name);
+//extern struct vector *bdb_load(char *name);
 extern struct vector *cdb_load(char *name);
-extern struct vector *sql_load(char *name);
 
 // Zum Debuggen
 bool vector_str_equal(struct vector *v0, struct vector *v1)
@@ -41,22 +40,18 @@ extern void bdb_store(char *name, struct vector *v);
 
 struct vector *load_file(char *name)
 {
-//      struct vector *v_sql = sql_load(name);
-
-//      struct vector *v_bdb = bdb_load(name);
+	struct vector *v_bdb = 0;	//bdb_load(name);
 	struct vector *v_cdb = cdb_load(name);
 
-//      if (vector_str_equal(v_cdb, v_bdb))
-//              puts("CDB==BDB");
-//      else {
-//              puts("CDB!=BDB");
-	puts("CDB:");
-	debug(v_cdb);
-	if (v_cdb)
-		bdb_store(name, v_cdb);
-//              puts("BDB:");
-//              debug(v_bdb);
-//      }
+	if (!v_bdb && !v_cdb)
+		return 0;
 
+	if (v_bdb)
+		return v_bdb;
+
+	if (!v_cdb)
+		return 0;
+
+	bdb_store(name, v_cdb);
 	return v_cdb;
 }

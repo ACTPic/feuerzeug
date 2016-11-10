@@ -21,8 +21,7 @@
 // Generische Struktur für alle unterstützten Datenbanken
 struct db {
 	char *query;
-	char *cdb_field;
-	MYSQL_RES *mysql_res;
+	char *db_field;
 };
 
 // Makros
