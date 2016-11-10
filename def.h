@@ -5,7 +5,6 @@
 #include <time.h>
 #include <assert.h>
 #include <stdbool.h>
-#include <mysql/mysql.h>
 
 #define BF_TYPE_NODE 0
 #define BF_TYPE_C_TEXT 1
