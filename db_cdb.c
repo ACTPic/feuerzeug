@@ -23,7 +23,7 @@ char *cdballoc(char *key)
 	return val;
 }
 
-void build_node(char *name, struct vector *v, char *sub)
+static void build_node(char *name, struct vector *v, char *sub)
 {
 	if (!sub) {
 		struct node *node = node_create(name, BF_TYPE_STRING);

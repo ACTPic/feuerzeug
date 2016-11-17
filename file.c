@@ -36,6 +36,7 @@ bool vector_str_equal(struct vector *v0, struct vector *v1)
 	return true;
 }
 
+extern struct vector *bdb_load(char *name);
 extern void bdb_store(char *name, struct vector *v);
 
 struct vector *load_file(char *name)
