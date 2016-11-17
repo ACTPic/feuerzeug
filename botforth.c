@@ -9,7 +9,7 @@
 #include "botforth.h"
 
 // CDB-Krempel
-struct cdb cdb;
+extern void cdb_startup();
 
 // Berkeley-DB-Krempel
 extern void bdb_init();
@@ -916,13 +916,7 @@ int main(int argc, char **argv)
 	// zufall initialisieren
 	srand(time(NULL));
 
-	int fd = open("calc.cdb", O_RDONLY);
-	if (fd == -1) {
-		perror("open");
-		exit(EXIT_FAILURE);
-	}
-	cdb_init(&cdb, fd);
-
+        cdb_startup();
         bdb_init();
 
 	// push parameters to dstack
