@@ -60,8 +60,10 @@ static char *bdballoc(char *key)
 	DBT data = { 0 };
 
 	int ret = dbp->get(dbp, 0, &field, &data, 0);
-	if (ret)
-		assert(ret);
+	if (ret) {
+		dbp->err(dbp, ret, "✝ DB->get");
+		assert(0);
+	}
 
 	fprintf(stderr, "[BDB] „%s“ ✈ „%s“\n", key,
 		(char *) data.data);
