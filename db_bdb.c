@@ -60,7 +60,10 @@ static char *bdballoc(char *key)
 	DBT data = { 0 };
 
 	int ret = dbp->get(dbp, 0, &field, &data, 0);
+
 	if (ret) {
+		if (ret == DB_NOTFOUND)
+			return 0;
 		dbp->err(dbp, ret, "✝ DB->get");
 		assert(0);
 	}
@@ -138,6 +141,9 @@ struct vector *bdb_load(char *name)
 
 	int ret = dbp->get(dbp, 0, &field, &data, 0);
 	if (ret) {
+		if (ret == DB_NOTFOUND)
+			return 0;
+
 		dbp->err(dbp, ret, "✝ DB->get");
 		assert(0);
 	}
