@@ -53,6 +53,8 @@ int main(int argc, char **argv)
 		case 'c':
 			{
 				struct vector *v = load_file(optarg);
+                                if(!v)
+                                        break;
 				char *inhalt =
 				    vector_pick_string(v, "inhalt");
 				if (!inhalt)
