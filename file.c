@@ -41,7 +41,7 @@ extern void bdb_store(char *name, struct vector *v);
 
 struct vector *load_file(char *name)
 {
-	struct vector *v_bdb = 0;	//bdb_load(name);
+	struct vector *v_bdb = bdb_load(name);
 	struct vector *v_cdb = cdb_load(name);
 
 	if (!v_bdb && !v_cdb)

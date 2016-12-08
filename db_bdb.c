@@ -30,12 +30,11 @@ static void bdb_put(char *key, char *val)
 	assert(key);
 	assert(val);
 
-	DBT field, data;
-	memset(&field, 0, sizeof(field));
-	memset(&data, 0, sizeof(data));
-
+	DBT field = { 0 };
 	field.data = key;
 	field.size = strlen(key) + 1;
+
+	DBT data = { 0 };
 	data.data = val;
 	data.size = strlen(val) + 1;
 
@@ -48,10 +47,9 @@ static void bdb_put(char *key, char *val)
 	int cret = dbp->close(dbp, 0);
 	assert(!cret);
 	bdb_init();
-	//fprintf(stderr, "[BDB] „%s“ → „%s“\n", key, val);
 }
 
-static char *bdballoc(char *key)
+char *bdballoc(char *key)
 {
 	DBT field = { 0 };
 	field.data = key;
@@ -68,9 +66,8 @@ static char *bdballoc(char *key)
 		assert(0);
 	}
 
-	fprintf(stderr, "[BDB] „%s“ ✈ „%s“\n", key,
-		(char *) data.data);
-	return data.data;
+	char *s = strdup(data.data);
+	return s;
 }
 
 static void store_node(char *name, struct vector *v, char *sub)
@@ -147,9 +144,6 @@ struct vector *bdb_load(char *name)
 		dbp->err(dbp, ret, "✝ DB->get");
 		assert(0);
 	}
-
-	fprintf(stderr, "[BDB] „%s“ ✈ „%s“\n", key,
-		(char *) data.data);
 
 	struct vector *vb = vector_create();
 	build_node(name, vb, "auth");
