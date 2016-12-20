@@ -1025,9 +1025,26 @@ void bf_c_sql_freeres()
 
 void bf_c_sql_escape()
 {
-	// STUB
-}
+	char *org = vector_pop_string(dstack);
+	assert(org);
+	char *esc = malloc(strlen(org) * 3 + 1);
+	assert(esc);
 
+	char *p = esc, *s = org;
+	while (*s) {
+		if (*s == '\'') {
+			strcpy(p, "‘");
+			p += strlen("‘");
+		} else
+			*p++ = *s++;
+	}
+	*p = 0;
+
+	printf("SQL-Escape: „%s“ → „%s“\n", org, esc);
+
+	free(org);
+	vector_push_string(dstack, esc);
+}
 
 /************************* IRC *********************/
 
