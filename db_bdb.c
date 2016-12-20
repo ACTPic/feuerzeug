@@ -120,7 +120,7 @@ static void build_node(char *name, struct vector *v, char *sub)
 	}
 }
 
-struct vector *bdb_load(char *name)
+int bdb_exists(char *name)
 {
 	char key[strlen(name) + strlen("/") + strlen("bot") + 1];
 	char *p = key, *n = name;
@@ -144,6 +144,14 @@ struct vector *bdb_load(char *name)
 		dbp->err(dbp, ret, "✝ DB->get");
 		assert(0);
 	}
+	return 1;
+}
+
+struct vector *bdb_load(char *name)
+{
+	int exists = bdb_exists(name);
+	if (!exists)
+		return 0;
 
 	struct vector *vb = vector_create();
 	build_node(name, vb, "auth");

@@ -11,9 +11,10 @@
 #include "botforth.h"
 
 // CDB-Krempel
-extern struct cdb cdb;
+extern int cdb_exists(char *name);
 
 // BDB-Krempel
+extern int bdb_exists(char *name);
 extern void bdb_store(char *name, struct vector *v);
 
 void bf_c_swap()
@@ -1058,18 +1059,7 @@ void bf_c_sql_numrows()
 		return;
 	}
 
-	char key[strlen(db->db_field) + strlen("/") + strlen("bot") + 1];
-	char *p = key, *n = db->db_field;
-	while (*n)
-		*p++ = tolower(*n++);
-	*p = 0;
-	strcat(key, "/");
-	strcat(key, "bot");
-
-	int cdbret = cdb_find(&cdb, key, strlen(key));
-	assert(cdbret != -1);
-
-	int numrows = cdbret ? 1 : 0;
+	int numrows = cdb_exists(db->db_field) || bdb_exists(db->db_field);
 
 	vector_push_db(dstack, db);
 	vector_push_int(dstack, numrows ? 1 : 0);

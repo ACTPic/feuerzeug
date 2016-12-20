@@ -69,7 +69,7 @@ static void build_node(char *name, struct vector *v, char *sub)
 	}
 }
 
-struct vector *cdb_load(char *name)
+int cdb_exists(char *name)
 {
 	char key[strlen(name) + strlen("/") + strlen("bot") + 1];
 	char *p = key, *n = name;
@@ -81,6 +81,13 @@ struct vector *cdb_load(char *name)
 
 	int cdbret = cdb_find(&cdb, key, strlen(key));
 	assert(cdbret != -1);
+
+	return cdbret;
+}
+
+struct vector *cdb_load(char *name)
+{
+	int cdbret = cdb_exists(name);
 	if (!cdbret)
 		return 0;
 
