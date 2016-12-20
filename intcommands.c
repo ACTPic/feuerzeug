@@ -906,7 +906,8 @@ char *rip_query(char *orig_query)
 	}
 	*p = 0;
 	size_t sq = strlen("select * from calc where eintrag='");
-	char *rq = "select *,rand() as r from calc where (not (eintrag like 'command/dope";
+	char *rq =
+	    "select *,rand() as r from calc where (not (eintrag like 'command/dope";
 	if (!strncmp(buf, "select * from calc where eintrag='", sq)) {
 		p = buf + sq;
 		if (p[strlen(p) - 1] == '\'')
@@ -914,9 +915,11 @@ char *rip_query(char *orig_query)
 		while (*p && p[strlen(p) - 1] == '/')
 			p[strlen(p) - 1] = 0;
 		return p;
-        } else if(!strncmp(buf, rq, strlen(rq))) {
-                strcpy(ripple, "command/dope/liste");
-                return ripple;
+	} else if (!strncmp(buf, rq, strlen(rq))) {
+		strcpy(ripple, "command/dope/liste");
+		return ripple;
+	} else if (!strncmp(buf, "delete ", strlen("delete "))) {
+		return 0;
 	} else {
 		printf("Unsupported SQL-Query: „%s“\n", buf);
 		return 0;
@@ -1022,7 +1025,7 @@ void bf_c_sql_freeres()
 
 void bf_c_sql_escape()
 {
-        // STUB
+	// STUB
 }
 
 
