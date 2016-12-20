@@ -13,6 +13,9 @@
 // CDB-Krempel
 extern struct cdb cdb;
 
+// BDB-Krempel
+extern void bdb_store(char *name, struct vector *v);
+
 void bf_c_swap()
 {
 	struct node *n1;
@@ -890,6 +893,59 @@ void bf_c_strlen()
 
 static char ripple[16384];
 
+static char *build_node(char *name, struct vector *v, char **sqlp)
+{
+	char *p = *sqlp;
+	if (!*p || *p == ')')
+		return 0;
+	if (*p == ',')
+		p++;
+
+	char *end = p;
+	if (*p == '\'') {
+		end = ++p;
+		while (*end && *end != '\'')
+			end++;
+		if (!*end)
+			*sqlp = end;
+		else
+			*sqlp = end + 1;
+		*end = 0;
+	} else {
+		while (*end && *end != ',' && *end != ')')
+			end++;
+		if (!*end)
+			*sqlp = end;
+		else
+			*sqlp = end + 1;
+		*end = 0;
+	}
+
+	struct node *node = node_create(p, BF_TYPE_STRING);
+	vector_put(v, name, node);
+	return p;
+}
+
+static void insert_sql(char *s)
+{
+	if (*s++ != '(')
+		return;
+
+	struct vector *v = vector_create();
+
+	char *eintrag = build_node("eintrag", v, &s);
+	build_node("inhalt", v, &s);
+	build_node("name", v, &s);
+	build_node("bot", v, &s);
+	build_node("network", v, &s);
+	build_node("channel", v, &s);
+	build_node("zeit", v, &s);
+	build_node("type", v, &s);
+
+	if (eintrag && *eintrag)
+		bdb_store(eintrag, v);
+}
+
 char *rip_query(char *orig_query)
 {
 	assert(orig_query);
@@ -908,6 +964,8 @@ char *rip_query(char *orig_query)
 	size_t sq = strlen("select * from calc where eintrag='");
 	char *rq =
 	    "select *,rand() as r from calc where (not (eintrag like 'command/dope";
+	char *iq =
+	    "insert into calc (eintrag,inhalt,name,bot,network,channel,zeit,type) ";
 	if (!strncmp(buf, "select * from calc where eintrag='", sq)) {
 		p = buf + sq;
 		if (p[strlen(p) - 1] == '\'')
@@ -919,6 +977,13 @@ char *rip_query(char *orig_query)
 		strcpy(ripple, "command/dope/liste");
 		return ripple;
 	} else if (!strncmp(buf, "delete ", strlen("delete "))) {
+		return 0;
+	} else if (!strncmp(buf, iq, strlen(iq))) {
+		p = buf + strlen(iq);
+		if (strncmp(p, "values ", strlen("values ")))
+			return 0;
+		p += strlen("values ");
+		insert_sql(p);
 		return 0;
 	} else {
 		printf("Unsupported SQL-Query: „%s“\n", buf);
