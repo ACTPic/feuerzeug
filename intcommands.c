@@ -1035,12 +1035,14 @@ void bf_c_sql_escape()
 		if (*s == '\'') {
 			strcpy(p, "‘");
 			p += strlen("‘");
+			s++;
 		} else
 			*p++ = *s++;
 	}
 	*p = 0;
 
-	printf("SQL-Escape: „%s“ → „%s“\n", org, esc);
+	if (strncmp(org, esc, strlen(org)))
+		printf("SQL-Escape: „%s“ → „%s“\n", org, esc);
 
 	free(org);
 	vector_push_string(dstack, esc);
