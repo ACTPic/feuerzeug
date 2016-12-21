@@ -967,6 +967,8 @@ char *rip_query(char *orig_query)
 	    "select *,rand() as r from calc where (not (eintrag like 'command/dope";
 	char *iq =
 	    "insert into calc (eintrag,inhalt,name,bot,network,channel,zeit,type) ";
+	char *aa = "select count(*) as anzahl from archiv where eintrag='";
+
 	if (!strncmp(buf, "select * from calc where eintrag='", sq)) {
 		p = buf + sq;
 		if (p[strlen(p) - 1] == '\'')
@@ -986,6 +988,9 @@ char *rip_query(char *orig_query)
 		p += strlen("values ");
 		insert_sql(p);
 		return 0;
+	} else if (!strncmp(buf, aa, strlen(aa))) {
+		strcpy(ripple, "anzahl");
+		return ripple;
 	} else {
 		printf("Unsupported SQL-Query: „%s“\n", buf);
 		return 0;
@@ -996,16 +1001,6 @@ void bf_c_sql_query()
 {
 	char *query = vector_pop_string(dstack);
 	assert(query);
-
-	bool read;
-	if (tolower(query[0]) == 's' && tolower(query[1]) == 'e' &&
-	    tolower(query[2]) == 'l' && tolower(query[3]) == 'e')
-		read = 1;
-
-	// Schreiben momentan nur simulieren
-	if (!read)
-		printf("✝ „%s“\n", query);
-
 
 	char *db_field = rip_query(query);
 	if (!db_field)
@@ -1029,22 +1024,30 @@ void bf_c_sql_fetch()
 {
 	struct db *db = vector_pop_db(dstack);
 	assert(db);
-
-	char *query = db->query;
-	printf("✈ „%s“\n", query);
-
-	struct vector *v = load_file(db->db_field);
-
 	assert(db->query);
-	query = malloc(strlen(db->query) + 1);
-	assert(query);
+	char *query = malloc(strlen(db->query) + 1);
 	strcpy(query, db->query);
+	assert(query);
+
+	char *db_field = 0;
+	if (db->db_field) {
+		db_field = malloc(strlen(db->db_field) + 1);
+		strcpy(db_field, db->db_field);
+	}
+
+	struct vector *v;
+	if (!strcmp(db_field, "anzahl")) {
+		v = vector_create();
+		struct node *node = node_create("0", BF_TYPE_STRING);
+		vector_put(v, "anzahl", node);
+	} else
+		v = load_file(db->db_field);
 
 	db = malloc(sizeof(struct db));
 	assert(db);
 	memset(db, 0, sizeof(struct db));
 	db->query = query;
-
+	db->db_field = db_field;
 	vector_push_db(dstack, db);
 	if (v)
 		vector_push_vector(dstack, v);
