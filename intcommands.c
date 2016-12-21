@@ -1038,7 +1038,10 @@ void bf_c_sql_fetch()
 	struct vector *v;
 	if (!strcmp(db_field, "anzahl")) {
 		v = vector_create();
-		struct node *node = node_create("0", BF_TYPE_STRING);
+		char *nil = malloc(sizeof("0") + 1);
+		assert(nil);
+		strcpy(nil, "0");
+		struct node *node = node_create(nil, BF_TYPE_STRING);
 		vector_put(v, "anzahl", node);
 	} else
 		v = load_file(db->db_field);
