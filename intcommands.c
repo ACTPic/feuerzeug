@@ -968,16 +968,25 @@ char *rip_query(char *orig_query)
 		*p++ = tolower(*s++);
 	}
 	*p = 0;
-	size_t sq = strlen("select * from calc where eintrag='");
-	char *rq =
+	const char *sq = "select * from calc where eintrag";
+	const char *rq =
 	    "select *,rand() as r from calc where (not (eintrag like 'command/dope";
-	char *iq =
+	const char *iq =
 	    "insert into calc (eintrag,inhalt,name,bot,network,channel,zeit,type) ";
-	char *aa = "select count(*) as anzahl from archiv where eintrag='";
-	char *uc = "update calc set count=count+1, lastcall='";
+	const char *aa =
+	    "select count(*) as anzahl from archiv where eintrag='";
+	const char *uc = "update calc set count=count+1, lastcall='";
 
-	if (!strncmp(buf, "select * from calc where eintrag='", sq)) {
-		p = buf + sq;
+	if (!strncmp(buf, sq, strlen(sq))) {
+		p = buf + strlen(sq);
+		while (*p == ' ')
+			p++;
+		if (*p == '=')
+			p++;
+		while (*p == ' ')
+			p++;
+		if (*p == '\'')
+			p++;
 		if (p[strlen(p) - 1] == '\'')
 			p[strlen(p) - 1] = 0;
 		while (*p && p[strlen(p) - 1] == '/')
