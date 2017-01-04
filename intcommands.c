@@ -1014,7 +1014,7 @@ char *rip_query(char *orig_query)
 			p[strlen(p) - 1] = 0;
 		while (*p && p[strlen(p) - 1] == '/')
 			p[strlen(p) - 1] = 0;
-		printf("UPDATE „%s“\n", p);
+
 		char *memp = malloc(strlen(p) + 1);
 		assert(memp);
 		strcpy(memp, p);
