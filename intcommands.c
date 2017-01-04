@@ -922,7 +922,11 @@ static char *build_node(char *name, struct vector *v, char **sqlp)
 		*end = 0;
 	}
 
-	struct node *node = node_create(p, BF_TYPE_STRING);
+	char *memp = malloc(strlen(p) + 1);
+	assert(memp);
+	strcpy(memp, p);
+	struct node *node = node_create(memp, BF_TYPE_STRING);
+	assert(name && *name);
 	vector_put(v, name, node);
 	return p;
 }
@@ -945,6 +949,8 @@ static void insert_sql(char *s)
 
 	if (eintrag && *eintrag)
 		bdb_store(eintrag, v);
+
+	vector_destroy(v);
 }
 
 char *rip_query(char *orig_query)
@@ -968,6 +974,7 @@ char *rip_query(char *orig_query)
 	char *iq =
 	    "insert into calc (eintrag,inhalt,name,bot,network,channel,zeit,type) ";
 	char *aa = "select count(*) as anzahl from archiv where eintrag='";
+	char *uc = "update calc set count=count+1, lastcall='";
 
 	if (!strncmp(buf, "select * from calc where eintrag='", sq)) {
 		p = buf + sq;
@@ -991,6 +998,43 @@ char *rip_query(char *orig_query)
 	} else if (!strncmp(buf, aa, strlen(aa))) {
 		strcpy(ripple, "anzahl");
 		return ripple;
+	} else if (!strncmp(buf, uc, strlen(uc))) {
+		p = buf + strlen(uc);
+
+		char *lastcall = malloc(strlen(p) + 1);
+		assert(lastcall);
+		strcpy(lastcall, p);
+		while (isdigit(*p))
+			p++;
+		const char *we = "' where eintrag='";
+		if (strncmp(p, we, strlen(we)))
+			return 0;
+		p += strlen(we);
+		if (p[strlen(p) - 1] == '\'')
+			p[strlen(p) - 1] = 0;
+		while (*p && p[strlen(p) - 1] == '/')
+			p[strlen(p) - 1] = 0;
+		printf("UPDATE „%s“\n", p);
+		char *memp = malloc(strlen(p) + 1);
+		assert(memp);
+		strcpy(memp, p);
+		struct vector *v = load_file(memp);
+		if (!v)
+			return 0;
+
+		char *count = vector_pick_string(v, "count");
+		assert(count);
+		int icount = atoi(count);
+		icount++;
+		free(count);
+		count = malloc(100);
+		assert(count);
+		sprintf(count, "%i", icount);
+		vector_replace_string(v, "count", count);
+		vector_replace_string(v, "lastcall", lastcall);
+		bdb_store(p, v);
+		vector_destroy(v);
+		return 0;
 	} else {
 		printf("Unsupported SQL-Query: „%s“\n", buf);
 		return 0;
@@ -1001,11 +1045,9 @@ void bf_c_sql_query()
 {
 	char *query = vector_pop_string(dstack);
 	assert(query);
-
 	char *db_field = rip_query(query);
 	if (!db_field)
 		goto end;
-
 	struct db *db = malloc(sizeof(struct db));
 	assert(db);
 	memset(db, 0, sizeof(struct db));
@@ -1028,7 +1070,6 @@ void bf_c_sql_fetch()
 	char *query = malloc(strlen(db->query) + 1);
 	strcpy(query, db->query);
 	assert(query);
-
 	char *db_field = 0;
 	if (db->db_field) {
 		db_field = malloc(strlen(db->db_field) + 1);
@@ -1045,7 +1086,6 @@ void bf_c_sql_fetch()
 		vector_put(v, "anzahl", node);
 	} else
 		v = load_file(db->db_field);
-
 	db = malloc(sizeof(struct db));
 	assert(db);
 	memset(db, 0, sizeof(struct db));
@@ -1065,8 +1105,8 @@ void bf_c_sql_numrows()
 		return;
 	}
 
-	int numrows = cdb_exists(db->db_field) || bdb_exists(db->db_field);
-
+	int numrows = cdb_exists(db->db_field)
+	    || bdb_exists(db->db_field);
 	vector_push_db(dstack, db);
 	vector_push_int(dstack, numrows ? 1 : 0);
 }
@@ -1090,7 +1130,6 @@ void bf_c_sql_escape()
 	assert(org);
 	char *esc = malloc(strlen(org) * 3 + 1);
 	assert(esc);
-
 	char *p = esc, *s = org;
 	while (*s) {
 		if (*s == '\'') {
@@ -1101,10 +1140,8 @@ void bf_c_sql_escape()
 			*p++ = *s++;
 	}
 	*p = 0;
-
 	if (strncmp(org, esc, strlen(org)))
 		printf("SQL-Escape: „%s“ → „%s“\n", org, esc);
-
 	free(org);
 	vector_push_string(dstack, esc);
 }
@@ -1211,9 +1248,9 @@ void bf_c_al()
 
 void bf_c_rand()
 {
-	vector_push_int(dstack,
-			(int) (vector_pop_int(dstack) * 1.0 * rand() /
-			       (RAND_MAX + 1.0)));
+	vector_push_int(dstack, (int)
+			(vector_pop_int
+			 (dstack) * 1.0 * rand() / (RAND_MAX + 1.0)));
 }
 
 /******************* Time *******************/
@@ -1259,7 +1296,8 @@ void bf_c_file_append()
 		if (filename && text) {
 			file = fopen(filename, "a");
 			if (!file) {
-				fprintf(stderr, "Append-Fail: „%s“.\n",
+				fprintf(stderr,
+					"Append-Fail: „%s“.\n",
 					filename);
 				abort();
 			}

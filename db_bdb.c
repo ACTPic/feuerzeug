@@ -85,7 +85,6 @@ static void store_node(char *name, struct vector *v, char *sub)
 		*p++ = tolower(*n++);
 	*p = 0;
 	bdb_put(key, inhalt);
-	free(inhalt);
 }
 
 
