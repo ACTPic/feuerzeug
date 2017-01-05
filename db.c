@@ -1,19 +1,32 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
 #include <getopt.h>
 #include "vector.h"
 #include "botforth.h"
 
 extern void cdb_startup();
 extern void bdb_init();
+extern void bdb_store(char *name, struct vector *v);
 
 void puthelp()
 {
 	printf("Argumente:\n"
-	       "        --help                    Diese Hilfe\n"
-	       "        --dump    [Eintrag]       Datenbankeintrag mit Spaltennamen anzeigen\n"
-	       "        --content [Eintrag]       Das Feld „Inhalt“ ausgeben\n");
+	       "    --help                        Diese Hilfe\n"
+	       "    --dump    [Eintrag]           Datenbankeintrag mit Spaltennamen anzeigen\n"
+	       "    --content [Eintrag]           Das Feld „Inhalt“ ausgeben\n"
+	       "    --write   [Eintrag] [Inhalt]  Datenbankeintrag schreiben\n");
+}
+
+static void build_node(char *name, struct vector *v, char *content)
+{
+	char *memp = malloc(strlen(content) + 1);
+	assert(memp);
+	strcpy(memp, content);
+	struct node *node = node_create(memp, BF_TYPE_STRING);
+	assert(name && *name);
+	vector_put(v, name, node);
 }
 
 int main(int argc, char **argv)
@@ -26,13 +39,22 @@ int main(int argc, char **argv)
 	cdb_startup();
 	bdb_init();
 
+	char *eintrag = 0;
+
 	for (;;) {
 		int option_index = 0;
 		static struct option long_options[] = {
-			{"help", no_argument, 0, 'h'},
-			{"dump", required_argument, 0, 'd'},
-			{"content", required_argument, 0, 'c'},
-			{0, 0, 0, 0}
+			{
+			 "help", no_argument, 0, 'h'}, {
+							"dump",
+							required_argument,
+							0, 'd'}, {
+								  "content",
+								  required_argument,
+								  0, 'c'},
+			{
+			 "write", required_argument, 0, 'w'}, {
+							       0, 0, 0, 0}
 		};
 
 		int c = getopt_long(argc, argv, "d:c:h",
@@ -53,8 +75,8 @@ int main(int argc, char **argv)
 		case 'c':
 			{
 				struct vector *v = load_file(optarg);
-                                if(!v)
-                                        break;
+				if (!v)
+					break;
 				char *inhalt =
 				    vector_pick_string(v, "inhalt");
 				if (!inhalt)
@@ -62,9 +84,38 @@ int main(int argc, char **argv)
 				printf("%s", inhalt);
 				break;
 			}
+		case 'w':
+			eintrag = optarg;
+			break;
 		case '?':
 			break;
 		}
+	}
+
+	if (eintrag) {
+		if (optind >= argc) {
+			fprintf(stderr, "Inhalt fehlt.\n");
+			return 1;
+		}
+
+		char *inhalt = argv[optind];
+
+		struct vector *v = vector_create();
+
+		build_node("eintrag", v, eintrag);
+		build_node("auth", v, "0");
+		build_node("inhalt", v, inhalt);
+		build_node("name", v, "db");
+		build_node("bot", v, "db");
+		build_node("network", v, "db");
+		build_node("channel", v, "");
+		build_node("zeit", v, "");
+		build_node("type", v, "0");
+		build_node("lastcall", v, "0");
+
+		bdb_store(eintrag, v);
+
+		vector_destroy(v);
 	}
 
 	return 0;
