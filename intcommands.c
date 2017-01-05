@@ -953,6 +953,27 @@ static void insert_sql(char *s)
 	vector_destroy(v);
 }
 
+static void replace_sql(char *s)
+{
+	if (*s++ != '(')
+		return;
+
+	struct vector *v = vector_create();
+
+	char *eintrag = build_node("eintrag", v, &s);
+	build_node("inhalt", v, &s);
+	build_node("name", v, &s);
+	build_node("bot", v, &s);
+	build_node("channel", v, &s);
+	build_node("network", v, &s);
+	build_node("zeit", v, &s);
+
+	if (eintrag && *eintrag)
+		bdb_store(eintrag, v);
+
+	vector_destroy(v);
+}
+
 char *rip_query(char *orig_query)
 {
 	assert(orig_query);
@@ -973,6 +994,8 @@ char *rip_query(char *orig_query)
 	    "select *,rand() as r from calc where (not (eintrag like 'command/dope";
 	const char *iq =
 	    "insert into calc (eintrag,inhalt,name,bot,network,channel,zeit,type) ";
+	const char *rc =
+	    "replace into calc (eintrag,inhalt,name,bot,channel,network,zeit) ";
 	const char *aa =
 	    "select count(*) as anzahl from archiv where eintrag='";
 	const char *uc = "update calc set count=count+1, lastcall='";
@@ -1003,6 +1026,13 @@ char *rip_query(char *orig_query)
 			return 0;
 		p += strlen("values ");
 		insert_sql(p);
+		return 0;
+	} else if (!strncmp(buf, rc, strlen(rc))) {
+		p = buf + strlen(rc);
+		if (strncmp(p, "values ", strlen("values ")))
+			return 0;
+		p += strlen("values ");
+		replace_sql(p);
 		return 0;
 	} else if (!strncmp(buf, aa, strlen(aa))) {
 		strcpy(ripple, "anzahl");
