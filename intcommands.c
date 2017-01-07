@@ -981,15 +981,10 @@ char *rip_query(char *orig_query)
 	assert(strlen(orig_query) + 1 < 16383);
 
 	char *buf = ripple;
-	char *s = orig_query, *p = buf;
-	char last = 0;
-	while (*s) {
-		if (last == '/' && *s == '/')
-			s++;
-		last = *s;
-		*p++ = *s++;
-	}
-	*p = 0;
+	strcpy(buf, orig_query);
+
+	char *p;
+
 	const char *sq = "select * from calc where eintrag";
 	const char *rq =
 	    "select *,rand() as r from calc where (not (eintrag like 'command/dope";
@@ -1027,7 +1022,7 @@ char *rip_query(char *orig_query)
 		p += strlen("eintrag='");
 		if (p[strlen(p) - 1] == '\'')
 			p[strlen(p) - 1] = 0;
-                bdb_delete(p);
+		bdb_delete(p);
 		return 0;
 	} else if (!strncmp(buf, iq, strlen(iq))) {
 		p = buf + strlen(iq);
