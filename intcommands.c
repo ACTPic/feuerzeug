@@ -987,7 +987,7 @@ char *rip_query(char *orig_query)
 		if (last == '/' && *s == '/')
 			s++;
 		last = *s;
-		*p++ = tolower(*s++);
+		*p++ = *s++;
 	}
 	*p = 0;
 	const char *sq = "select * from calc where eintrag";
