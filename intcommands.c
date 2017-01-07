@@ -987,7 +987,7 @@ char *rip_query(char *orig_query)
 
 	const char *sq = "select * from calc where eintrag";
 	const char *rq =
-	    "select *,rand() as r from calc where (not (eintrag like 'command/dope";
+	    "select *,rand() as r from calc where (NOT (eintrag LIKE 'command/dope";
 	const char *iq =
 	    "insert into calc (eintrag,inhalt,name,bot,network,channel,zeit,type) ";
 	const char *rc =
