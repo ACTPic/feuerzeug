@@ -59,6 +59,8 @@ static void bdb_del(char *key)
 
 	int ret = dbp->del(dbp, 0, &field, 0);
 	if (ret) {
+		if (ret == DB_NOTFOUND)
+			return;
 		dbp->err(dbp, ret, "[BDB] DB->del");
 		assert(!ret);
 	}
