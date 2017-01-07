@@ -16,6 +16,7 @@ extern int cdb_exists(char *name);
 // BDB-Krempel
 extern int bdb_exists(char *name);
 extern void bdb_store(char *name, struct vector *v);
+extern void bdb_delete(char *name);
 
 void bf_c_swap()
 {
@@ -999,6 +1000,7 @@ char *rip_query(char *orig_query)
 	const char *aa =
 	    "select count(*) as anzahl from archiv where eintrag='";
 	const char *uc = "update calc set count=count+1, lastcall='";
+	const char *dc = "delete from calc where ";
 
 	if (!strncmp(buf, sq, strlen(sq))) {
 		p = buf + strlen(sq);
@@ -1018,7 +1020,14 @@ char *rip_query(char *orig_query)
 	} else if (!strncmp(buf, rq, strlen(rq))) {
 		strcpy(ripple, "command/dope/liste");
 		return ripple;
-	} else if (!strncmp(buf, "delete ", strlen("delete "))) {
+	} else if (!strncmp(buf, dc, strlen(dc))) {
+		p = buf + strlen(dc);
+		if (strncmp(p, "eintrag='", strlen("eintrag=")))
+			return 0;
+		p += strlen("eintrag='");
+		if (p[strlen(p) - 1] == '\'')
+			p[strlen(p) - 1] = 0;
+                bdb_delete(p);
 		return 0;
 	} else if (!strncmp(buf, iq, strlen(iq))) {
 		p = buf + strlen(iq);

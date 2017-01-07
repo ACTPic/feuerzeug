@@ -49,6 +49,25 @@ static void bdb_put(char *key, char *val)
 	bdb_init();
 }
 
+static void bdb_del(char *key)
+{
+	assert(key);
+
+	DBT field = { 0 };
+	field.data = key;
+	field.size = strlen(key) + 1;
+
+	int ret = dbp->del(dbp, 0, &field, 0);
+	if (ret) {
+		dbp->err(dbp, ret, "[BDB] DB->del");
+		assert(!ret);
+	}
+
+	int cret = dbp->close(dbp, 0);
+	assert(!cret);
+	bdb_init();
+}
+
 char *bdballoc(char *key)
 {
 	DBT field = { 0 };
@@ -85,6 +104,20 @@ static void store_node(char *name, struct vector *v, char *sub)
 		*p++ = tolower(*n++);
 	*p = 0;
 	bdb_put(key, inhalt);
+}
+
+static void remove_node(char *name, char *sub)
+{
+	char key[strlen(name) + sizeof("/") + strlen(sub)];
+	char *p = key, *n = name;
+	while (*n)
+		*p++ = tolower(*n++);
+	*p++ = '/';
+	n = sub;
+	while (*n)
+		*p++ = tolower(*n++);
+	*p = 0;
+	bdb_del(key);
 }
 
 
@@ -185,4 +218,21 @@ void bdb_store(char *name, struct vector *v)
 	store_node(name, v, "lastcall");
 	store_node(name, v, "eintrag");
 	store_node(name, v, "bot");
+}
+
+void bdb_delete(char *name)
+{
+	remove_node(name, "eintrag");
+	remove_node(name, "inhalt");
+	remove_node(name, "name");
+	remove_node(name, "zeit");
+	remove_node(name, "protected");
+	remove_node(name, "channel");
+	remove_node(name, "network");
+	remove_node(name, "count");
+	remove_node(name, "type");
+	remove_node(name, "tag");
+	remove_node(name, "lastcall");
+	remove_node(name, "bot");
+	remove_node(name, "auth");
 }
