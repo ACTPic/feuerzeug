@@ -20,28 +20,28 @@ Vorerst einfach auf Festplatte in einem Verzeichnis.
 
 Datenfestspeicher
 =================
-Noch garnicht, später vielleicht auch Festplatte, oder mysql, oder wie auch
+Noch garnicht, spÃ¤ter vielleicht auch Festplatte, oder mysql, oder wie auch
 immer.
 
 
 
 Datenarbeitsspeicher
 ====================
-Doppelt verkettete Liste, jedes Element kann zusätzlich einen Namen haben.
-Zugriff entweder durch push/pop bzw. shift/unshift, über eine Nummer wie bei
-einem Array oder über seinen Namen wie bei einem Hash. 
-Es ist aber auch möglich, direkt über einen Pointer zuzugreifen. Pointer
+Doppelt verkettete Liste, jedes Element kann zusÃ¤tzlich einen Namen haben.
+Zugriff entweder durch push/pop bzw. shift/unshift, Ã¼ber eine Nummer wie bei
+einem Array oder Ã¼ber seinen Namen wie bei einem Hash. 
+Es ist aber auch mÃ¶glich, direkt Ã¼ber einen Pointer zuzugreifen. Pointer
 lassen sich jedoch nicht vom Benutzer direkt erstellen, sondern nur von
 entsprechend priviligierten Programmen.
 
-Im ersten Entwurf würde man Elemente, auf die per Nummer oder Namen
-zugegriffen wird, durch naive Suche finden. Später kann man ja noch einen
-Index oder ähnliches drauf setzen.
+Im ersten Entwurf wÃ¼rde man Elemente, auf die per Nummer oder Namen
+zugegriffen wird, durch naive Suche finden. SpÃ¤ter kann man ja noch einen
+Index oder Ã¤hnliches drauf setzen.
 
 Diese Speicherstruktur nenne ich "vector".
 
 Datentypen:
-Nach Außen hin sollen nur wenige verschiedene Datentypen sichtbar sein:
+Nach AuÃŸen hin sollen nur wenige verschiedene Datentypen sichtbar sein:
 - Wert (integer, string, was auch immer)
 - Vector
 
@@ -52,7 +52,7 @@ bei Bedarf konvertiert werden:
 - string, bzw. pointer auf string
 - pointer auf Elemente eines Vektors
 
-Aus technischer Sicht gibt es nach Außen hin eigentlich auch nicht die
+Aus technischer Sicht gibt es nach AuÃŸen hin eigentlich auch nicht die
 Unterscheidung zwischen Wert und vector. Auch hier kann und wird bei Bedarf
 eine automatische Konvertierung vorgenommen. Im Normalfall wird jedoch der
 Anwender dies nicht tun, und in der Dokumentation wird auch immer ein klarer
@@ -60,31 +60,31 @@ Unterschied zwischen normalen Werten und Vektoren gemacht.
 
 Ein Sonderfall ist der Pointer auf Elemente eines Vektors: Weder kann von
 einem Wert in diesen Typ konvertiert werden, noch anders herum (bzw. doch,
-aber dann käme nur ein String "pointer" oder 0 bei heraus).
+aber dann kÃ¤me nur ein String "pointer" oder 0 bei heraus).
 
 Die einzelnen Elemente eines Vektors werden in einem union gespeichert. Der
-Union enthält die verschiedenen möglichen Ausprägungen der Werte, also int,
+Union enthÃ¤lt die verschiedenen mÃ¶glichen AusprÃ¤gungen der Werte, also int,
 float, und pointer. Zudem gibt es ein Feld, in dem gespeichert wird, welche
-Ausprägung gerade "aktiv" ist.
+AusprÃ¤gung gerade "aktiv" ist.
 
-Ein zusätzlicher Typ, den man später noch hinzufügen könnte wäre "array".
-Dieser Typ würde sich zum Speichern größerer Datenmengen eignen, da er
-gegenüber einem Vektor keinen Overhead pro Element hätte. 
+Ein zusÃ¤tzlicher Typ, den man spÃ¤ter noch hinzufÃ¼gen kÃ¶nnte wÃ¤re "array".
+Dieser Typ wÃ¼rde sich zum Speichern grÃ¶ÃŸerer Datenmengen eignen, da er
+gegenÃ¼ber einem Vektor keinen Overhead pro Element hÃ¤tte. 
 
 Programmarbeitsspeicher
 =======================
 Der Programmspeicher ist nichts anderes als normaler Datenspeicher. Dies
-macht es möglich, Compilererweiterungen selbst in botforth zu schreiben.
+macht es mÃ¶glich, Compilererweiterungen selbst in botforth zu schreiben.
 
 
 minibotforth
 ============
-Folgende Befehle müssen implementiert werden:
+Folgende Befehle mÃ¼ssen implementiert werden:
 - swap
 - +
 ...
 
-minibotforth sollte so extrem simpel sein, daß man es später vielleicht
+minibotforth sollte so extrem simpel sein, daÃŸ man es spÃ¤ter vielleicht
 sogar ganz weg lassen kann, um direkt nach Maschinensprache zu kompilieren.
 
 Compiler von botforth nach minibotforth
@@ -100,13 +100,13 @@ abgelegt wird.
 2. Schritt: Compiler. Hier wird botforth nach minibotforth gewandelt. Auch
 hier werden jedoch Befehlsnamen als BF_TYPE_C_TEXT abgelegt.
 
-3. Ausführung: Erst während der Programmausführung, also wenn wir uns schon
-längst nicht mehr im Compilermodus befinden, werden Befehle vom Typ
-BF_TYPE_C_TEXT, sobald sie ausgeführt werden sollen, in BF_TYPE_C_INT bzw.
+3. AusfÃ¼hrung: Erst wÃ¤hrend der ProgrammausfÃ¼hrung, also wenn wir uns schon
+lÃ¤ngst nicht mehr im Compilermodus befinden, werden Befehle vom Typ
+BF_TYPE_C_TEXT, sobald sie ausgefÃ¼hrt werden sollen, in BF_TYPE_C_INT bzw.
 BF_TYPE_C_EXT gewandelt.
 
 Dies dient dazu, den Compiler vom User erweiterbar zu halten. Er kann so
-leicht Befehle einfügen, ohne mit Pointern etc. rumspielen zu müssen. Somit
+leicht Befehle einfÃ¼gen, ohne mit Pointern etc. rumspielen zu mÃ¼ssen. Somit
 wird auch kein Sicherheitsloch erzeugt. Aus der Sicht eines Anwenders, der
 den Compiler durch das Programmieren von Compilezeitverhaltens von Befehlen
 erweitern will, sind Befehle quasi wie Strings zu handhaben.
