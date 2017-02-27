@@ -4,7 +4,6 @@
 #include "node.h"
 #include "vector.h"
 
-//extern struct vector *bdb_load(char *name);
 extern struct vector *cdb_load(char *name);
 
 // Zum Debuggen
