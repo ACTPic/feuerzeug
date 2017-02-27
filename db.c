@@ -15,7 +15,9 @@ void puthelp()
 	printf("Argumente:\n"
 	       "    --help                        Diese Hilfe\n"
 	       "    --dump    [Eintrag]           Datenbankeintrag mit Spaltennamen anzeigen\n"
+	       "    --dumpall                     Alle Datenbankeinträge (mit Spalten) zeigen\n"
 	       "    --content [Eintrag]           Das Feld „Inhalt“ ausgeben\n"
+	       "    --allcont                     Das Feld „Inhalt“ aller Einträge ausgeben\n"
 	       "    --write   [Eintrag] [Inhalt]  Datenbankeintrag schreiben\n");
 }
 
@@ -44,17 +46,13 @@ int main(int argc, char **argv)
 	for (;;) {
 		int option_index = 0;
 		static struct option long_options[] = {
-			{
-			 "help", no_argument, 0, 'h'}, {
-							"dump",
-							required_argument,
-							0, 'd'}, {
-								  "content",
-								  required_argument,
-								  0, 'c'},
-			{
-			 "write", required_argument, 0, 'w'}, {
-							       0, 0, 0, 0}
+                        { "help", no_argument, 0, 'h'},
+                        { "dump", required_argument, 0, 'd'},
+                        { "dumpall", no_argument, 0, 'D'},
+                        { "content", required_argument, 0, 'c'},
+                        { "allcont", no_argument, 0, 'C'},
+                        { "write", required_argument, 0, 'w'},
+                        { 0, 0, 0, 0 }
 		};
 
 		int c = getopt_long(argc, argv, "d:c:h",
@@ -72,9 +70,27 @@ int main(int argc, char **argv)
 				debug(v);
 				break;
 			}
+		case 'D':
+			{
+				struct vector *v = load_file("leene");
+				debug(v);
+				break;
+			}
 		case 'c':
 			{
 				struct vector *v = load_file(optarg);
+				if (!v)
+					break;
+				char *inhalt =
+				    vector_pick_string(v, "inhalt");
+				if (!inhalt)
+					break;
+				printf("%s", inhalt);
+				break;
+			}
+		case 'C':
+			{
+				struct vector *v = load_file("leene");
 				if (!v)
 					break;
 				char *inhalt =
