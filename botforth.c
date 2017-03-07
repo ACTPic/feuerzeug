@@ -531,8 +531,6 @@ struct vector *word_load(char *name, char *ns)
 				printf
 				    ("vorkompiliertes programm gefunden\n");
 				program = n->content;
-				// soll das programm aus dem cache geloescht werden?
-				assert(program->head != NULL);	// todo: kann weg, leere programme sind ok
 			} else {
 				printf("cache-word ist kein vector\n");
 				exit(1);

@@ -80,10 +80,12 @@ int node_destroy(struct node *n)
 		break;
 		//case BF_TYPE_C_EXT:  // leider nein, weil sonst der cache sich rekursiv dematerialisiert
 	case BF_TYPE_VECTOR:
-		vector_destroy((struct vector *) n->content);
+                if(n != n->content)
+                        vector_destroy((struct vector *) n->content);
 		break;
 	case BF_TYPE_NODE:
-		node_destroy((struct node *) n->content);
+		if(n != n->content)
+                        node_destroy((struct node *) n->content);
 		break;
 	case BF_TYPE_DB:
 		{

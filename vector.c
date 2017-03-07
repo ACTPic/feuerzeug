@@ -142,11 +142,6 @@ int vector_push(struct vector *v, struct node *n)
 	assert(v != NULL);
 	assert(n != NULL);
 	assert(n->type < 20);
-	// stack- und allgemein vektorgroesse begrenzen
-	if (accesslevel > 2 && v->size > 10000) {
-		node_destroy(n);
-		return 0;
-	}
 	n->prev = v->tail;
 	n->next = NULL;
 	if (v->tail != NULL)
