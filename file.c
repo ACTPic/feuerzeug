@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdint.h>
 #include <stdbool.h>
 #include "node.h"
 #include "vector.h"
@@ -54,4 +55,12 @@ struct vector *load_file(char *name)
 
 	bdb_store(name, v_cdb);
 	return v_cdb;
+}
+
+void iterate(int (*action) (uint64_t n, struct vector * content))
+{
+	struct vector *v_cdb = cdb_load("leene");
+	action(0, v_cdb);
+	struct vector *v_bdb = bdb_load("leene");
+	action(1, v_bdb);
 }

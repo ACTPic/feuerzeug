@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <getopt.h>
+#include <inttypes.h>
 #include "vector.h"
 #include "botforth.h"
 
@@ -31,6 +32,30 @@ static void build_node(char *name, struct vector *v, char *content)
 	vector_put(v, name, node);
 }
 
+static int dump(int64_t n, struct vector *v)
+{
+	printf("#%7" PRId64 ": ", n);
+	debug(v);
+	putchar('\n');
+	return 0;
+}
+
+static int dump_content(int64_t n, struct vector *v)
+{
+	(void) n;
+
+	if (!v)
+		return 0;
+
+	char *inhalt = vector_pick_string(v, "inhalt");
+	if (!inhalt)
+		return 0;
+
+	printf("%s", inhalt);
+	putchar(0);
+	return 0;
+}
+
 int main(int argc, char **argv)
 {
 	if (argc < 2) {
@@ -46,13 +71,13 @@ int main(int argc, char **argv)
 	for (;;) {
 		int option_index = 0;
 		static struct option long_options[] = {
-                        { "help", no_argument, 0, 'h'},
-                        { "dump", required_argument, 0, 'd'},
-                        { "dumpall", no_argument, 0, 'D'},
-                        { "content", required_argument, 0, 'c'},
-                        { "allcont", no_argument, 0, 'C'},
-                        { "write", required_argument, 0, 'w'},
-                        { 0, 0, 0, 0 }
+			{"help", no_argument, 0, 'h'},
+			{"dump", required_argument, 0, 'd'},
+			{"dumpall", no_argument, 0, 'D'},
+			{"content", required_argument, 0, 'c'},
+			{"allcont", no_argument, 0, 'C'},
+			{"write", required_argument, 0, 'w'},
+			{0, 0, 0, 0}
 		};
 
 		int c = getopt_long(argc, argv, "d:c:h",
@@ -72,8 +97,7 @@ int main(int argc, char **argv)
 			}
 		case 'D':
 			{
-				struct vector *v = load_file("leene");
-				debug(v);
+				iterate(dump);
 				break;
 			}
 		case 'c':
@@ -90,14 +114,7 @@ int main(int argc, char **argv)
 			}
 		case 'C':
 			{
-				struct vector *v = load_file("leene");
-				if (!v)
-					break;
-				char *inhalt =
-				    vector_pick_string(v, "inhalt");
-				if (!inhalt)
-					break;
-				printf("%s", inhalt);
+				iterate(dump_content);
 				break;
 			}
 		case 'w':

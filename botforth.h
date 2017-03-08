@@ -1,6 +1,8 @@
 #ifndef BOTFORTH_H
 #define BOTFORTH_H
 
+#include <stdint.h>
+
 #include "def.h"
 #include "vector.h"
 #include "node.h"
@@ -44,6 +46,7 @@ char *getintcommandname(void *p);
 
 // file
 struct vector *load_file(char *name);
+void iterate(int (*action)(int64_t n, struct vector *content));
 
 extern struct vector *word_load(char *name, char *ns);
 extern void infoblock_set_accesslevel(struct vector *word, int al);
