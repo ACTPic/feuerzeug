@@ -19,6 +19,7 @@ void puthelp()
 	       "    --dumpall                     Alle Datenbankeinträge (mit Spalten) zeigen\n"
 	       "    --content [Eintrag]           Das Feld „Inhalt“ ausgeben\n"
 	       "    --allcont                     Das Feld „Inhalt“ aller Einträge ausgeben\n"
+               "    --anlcont                     ^ mit „\\n“ statt „\\0“ als Trenner\n"
 	       "    --write   [Eintrag] [Inhalt]  Datenbankeintrag schreiben\n");
 }
 
@@ -56,6 +57,22 @@ static int dump_content(int64_t n, struct vector *v)
 	return 0;
 }
 
+static int dump_content_newline(int64_t n, struct vector *v)
+{
+	(void) n;
+
+	if (!v)
+		return 0;
+
+	char *inhalt = vector_pick_string(v, "inhalt");
+	if (!inhalt)
+		return 0;
+
+	printf("%s", inhalt);
+	putchar('\n');
+	return 0;
+}
+
 int main(int argc, char **argv)
 {
 	if (argc < 2) {
@@ -76,11 +93,12 @@ int main(int argc, char **argv)
 			{"dumpall", no_argument, 0, 'D'},
 			{"content", required_argument, 0, 'c'},
 			{"allcont", no_argument, 0, 'C'},
+			{"anlcont", no_argument, 0, 'N'},
 			{"write", required_argument, 0, 'w'},
 			{0, 0, 0, 0}
 		};
 
-		int c = getopt_long(argc, argv, "d:c:h",
+		int c = getopt_long(argc, argv, "d:c:hDCNw:",
 				    long_options, &option_index);
 		if (c == -1)
 			break;
@@ -115,6 +133,11 @@ int main(int argc, char **argv)
 		case 'C':
 			{
 				iterate(dump_content);
+				break;
+			}
+		case 'N':
+			{
+				iterate(dump_content_newline);
 				break;
 			}
 		case 'w':

@@ -6,6 +6,8 @@
 #include "vector.h"
 
 extern struct vector *cdb_load(char *name);
+extern void cdb_loadall_init();
+extern struct vector *cdb_loadall_next();
 
 // Zum Debuggen
 bool vector_str_equal(struct vector *v0, struct vector *v1)
@@ -57,10 +59,14 @@ struct vector *load_file(char *name)
 	return v_cdb;
 }
 
-void iterate(int (*action) (uint64_t n, struct vector * content))
+void iterate(int (*action) (int64_t n, struct vector * content))
 {
-	struct vector *v_cdb = cdb_load("leene");
-	action(0, v_cdb);
-	struct vector *v_bdb = bdb_load("leene");
-	action(1, v_bdb);
+	int64_t count = 0;
+	struct vector *v_cdb = 0;
+
+	for (cdb_loadall_init(); (v_cdb = cdb_loadall_next()); count++) {
+		action(count, v_cdb);
+	}
+
+	// TODO: Berkeley-DB auch.
 }

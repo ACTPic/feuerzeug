@@ -12,6 +12,7 @@
 #include "vector.h"
 
 struct cdb cdb;
+unsigned pos;
 
 void cdb_startup()
 {
@@ -38,6 +39,109 @@ char *cdballoc(char *key)
 	return val;
 }
 
+int cdb_exists(char *name)
+{
+	char key[strlen(name) + strlen("/") + strlen("bot") + 1];
+	char *p = key, *n = name;
+	while (*n)
+		*p++ = tolower(*n++);
+	*p = 0;
+	strcat(key, "/");
+	strcat(key, "bot");
+
+	int cdbret = cdb_find(&cdb, key, strlen(key));
+	assert(cdbret != -1);
+
+	return cdbret;
+}
+
+static char *name;
+static char *sub;
+static char *val;
+
+static void split_key(char *key)
+{
+	name = sub = 0;
+
+	if (!key || !*key)
+		return;
+
+	char tmp[strlen(key) + 1];
+
+	char *slash = strrchr(key, '/');
+	if (!slash || !*slash)
+		return;
+
+	char *p = tmp;
+	while (key != slash)
+		*p++ = *key++;
+	*p = 0;
+
+	name = strdup(tmp);
+	sub = strdup(slash + 1);
+}
+
+
+static bool build_next()
+{
+	if (cdb_seqnext(&pos, &cdb) <= 0)
+		return false;
+
+	unsigned keylen = cdb_keylen(&cdb);
+	char *key = malloc(keylen + 1);
+	cdb_read(&cdb, key, keylen, cdb_keypos(&cdb));
+	key[keylen] = 0;
+	unsigned datalen = cdb_datalen(&cdb);
+	val = malloc(datalen + 1);
+	cdb_read(&cdb, val, datalen, cdb_datapos(&cdb));
+	val[datalen] = 0;
+
+	split_key(key);
+	free(key);
+	return true;
+}
+
+void cdb_loadall_init()
+{
+	cdb_seqinit(&pos, &cdb);
+        if (name) {
+		free(name);
+		name = 0;
+	}
+	if (sub) {
+		free(sub);
+		sub = 0;
+	}
+	if (val) {
+		free(val);
+		val = 0;
+	}
+
+	build_next();
+}
+
+
+
+struct vector *cdb_loadall_next()
+{
+	struct vector *v = vector_create();
+        struct node *node = node_create(name, BF_TYPE_STRING);
+        char cur_name[strlen(name)+1];
+        strcpy(cur_name, name);
+        vector_put(v, "eintrag", node);
+
+        while(!strcmp(cur_name, name)) {
+                if(!sub)
+                        continue;
+                node = node_create(val, BF_TYPE_STRING);
+		vector_put(v, sub, node);
+                if(!build_next())
+                        return 0;
+	}
+
+	return v;
+}
+
 static void build_node(char *name, struct vector *v, char *sub)
 {
 	if (!sub) {
@@ -55,34 +159,8 @@ static void build_node(char *name, struct vector *v, char *sub)
 	strcat(key, sub);
 
 	char *val = cdballoc(key);
-	if (val) {
-		struct node *node;
-		if (!strcmp(sub, "auth") ||
-		    (!strcmp(sub, "type") && !*val)) {
-			char *nil = malloc(1 + 1);
-			assert(nil);
-			strcpy(nil, "0");
-			node = node_create(nil, BF_TYPE_STRING);
-		} else
-			node = node_create(val, BF_TYPE_STRING);
-		vector_put(v, sub, node);
-	}
-}
-
-int cdb_exists(char *name)
-{
-	char key[strlen(name) + strlen("/") + strlen("bot") + 1];
-	char *p = key, *n = name;
-	while (*n)
-		*p++ = tolower(*n++);
-	*p = 0;
-	strcat(key, "/");
-	strcat(key, "bot");
-
-	int cdbret = cdb_find(&cdb, key, strlen(key));
-	assert(cdbret != -1);
-
-	return cdbret;
+        struct node * node = node_create(val, BF_TYPE_STRING);
+        vector_put(v, sub, node);
 }
 
 struct vector *cdb_load(char *name)
