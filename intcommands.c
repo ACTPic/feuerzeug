@@ -1018,7 +1018,7 @@ char *rip_query(char *orig_query)
 		strcpy(ripple, "command/dope/liste");
 		return ripple;
 	} else if (!strncmp(buf, Rq, strlen(Rq))) {
-		strcpy(ripple, "leene");
+		strcpy(ripple, "randcalc()");
 		return ripple;
 	} else if (!strncmp(buf, dc, strlen(dc))) {
 		p = buf + strlen(dc);
@@ -1132,7 +1132,7 @@ void bf_c_sql_fetch()
 		strcpy(nil, "0");
 		struct node *node = node_create(nil, BF_TYPE_STRING);
 		vector_put(v, "anzahl", node);
-	} else
+        } else
 		v = load_file(db->db_field);
 	db = malloc(sizeof(struct db));
 	assert(db);
@@ -1153,10 +1153,23 @@ void bf_c_sql_numrows()
 		return;
 	}
 
-	int numrows = cdb_exists(db->db_field)
-	    || bdb_exists(db->db_field);
+        if(!strcmp(db->db_field, "randcalc()")) {
+                int rnd = rand() % 3;
+                switch(rnd) {
+                case 0:
+                        db->db_field = strdup("leene"); break;
+                case 1:
+                        db->db_field = strdup("yath"); break;
+                case 2:
+                default:
+                        db->db_field = strdup("pmb"); break;
+                }
+        }
+
+	int numrows = cdb_exists(db->db_field) || bdb_exists(db->db_field);
+
 	vector_push_db(dstack, db);
-	vector_push_int(dstack, numrows ? 1 : 0);
+	vector_push_int(dstack, numrows);
 }
 
 void bf_c_sql_freeres()
