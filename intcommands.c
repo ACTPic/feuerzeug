@@ -988,8 +988,7 @@ char *rip_query(char *orig_query)
 	const char *sq = "select * from calc where eintrag";
 	const char *rq =
 	    "select *,rand() as r from calc where (NOT (eintrag LIKE 'command/dope";
-	const char *Rq =
-	    "select *,rand() as r from calc where type=0";
+	const char *Rq = "select *,rand() as r from calc where type=0";
 	const char *iq =
 	    "insert into calc (eintrag,inhalt,name,bot,network,channel,zeit,type) ";
 	const char *rc =
@@ -1099,12 +1098,8 @@ void bf_c_sql_query()
 	struct db *db = malloc(sizeof(struct db));
 	assert(db);
 	memset(db, 0, sizeof(struct db));
-	db->db_field = malloc(strlen(db_field) + 1);
-	assert(db->db_field);
-	strcpy(db->db_field, db_field);
-	db->query = malloc(strlen(query) + 1);
-	assert(db->query);
-	strcpy(db->query, query);
+	db->db_field = strdup(db_field);
+	db->query = strdup(query);
 	vector_push_db(dstack, db);
       end:
 	free(query);
@@ -1119,10 +1114,8 @@ void bf_c_sql_fetch()
 	strcpy(query, db->query);
 	assert(query);
 	char *db_field = 0;
-	if (db->db_field) {
-		db_field = malloc(strlen(db->db_field) + 1);
-		strcpy(db_field, db->db_field);
-	}
+	if (db->db_field)
+		db_field = strdup(db->db_field);
 
 	struct vector *v;
 	if (!strcmp(db_field, "anzahl")) {
@@ -1132,7 +1125,7 @@ void bf_c_sql_fetch()
 		strcpy(nil, "0");
 		struct node *node = node_create(nil, BF_TYPE_STRING);
 		vector_put(v, "anzahl", node);
-        } else
+	} else
 		v = load_file(db->db_field);
 	db = malloc(sizeof(struct db));
 	assert(db);
@@ -1153,18 +1146,21 @@ void bf_c_sql_numrows()
 		return;
 	}
 
-        if(!strcmp(db->db_field, "randcalc()")) {
-                int rnd = rand() % 3;
-                switch(rnd) {
-                case 0:
-                        db->db_field = strdup("leene"); break;
-                case 1:
-                        db->db_field = strdup("yath"); break;
-                case 2:
-                default:
-                        db->db_field = strdup("pmb"); break;
-                }
-        }
+	if (!strcmp(db->db_field, "randcalc()")) {
+		int rnd = rand() % 3;
+		switch (rnd) {
+		case 0:
+			db->db_field = strdup("leene");
+			break;
+		case 1:
+			db->db_field = strdup("yath");
+			break;
+		case 2:
+		default:
+			db->db_field = strdup("pmb");
+			break;
+		}
+	}
 
 	int numrows = cdb_exists(db->db_field) || bdb_exists(db->db_field);
 
