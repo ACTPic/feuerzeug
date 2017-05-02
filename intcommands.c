@@ -1098,7 +1098,7 @@ void bf_c_sql_query()
 	struct db *db = malloc(sizeof(struct db));
 	assert(db);
 	memset(db, 0, sizeof(struct db));
-	db->db_field = strdup(db_field);
+	db->field = strdup(db_field);
 	db->query = strdup(query);
 	vector_push_db(dstack, db);
       end:
@@ -1114,8 +1114,8 @@ void bf_c_sql_fetch()
 	strcpy(query, db->query);
 	assert(query);
 	char *db_field = 0;
-	if (db->db_field)
-		db_field = strdup(db->db_field);
+	if (db->field)
+		db_field = strdup(db->field);
 
 	struct vector *v;
 	if (!strcmp(db_field, "anzahl")) {
@@ -1126,12 +1126,12 @@ void bf_c_sql_fetch()
 		struct node *node = node_create(nil, BF_TYPE_STRING);
 		vector_put(v, "anzahl", node);
 	} else
-		v = load_file(db->db_field);
+		v = load_file(db->field);
 	db = malloc(sizeof(struct db));
 	assert(db);
 	memset(db, 0, sizeof(struct db));
 	db->query = query;
-	db->db_field = db_field;
+	db->field = db_field;
 	vector_push_db(dstack, db);
 	if (v)
 		vector_push_vector(dstack, v);
@@ -1146,23 +1146,23 @@ void bf_c_sql_numrows()
 		return;
 	}
 
-	if (!strcmp(db->db_field, "randcalc()")) {
+	if (!strcmp(db->field, "randcalc()")) {
 		int rnd = rand() % 3;
 		switch (rnd) {
 		case 0:
-			db->db_field = strdup("leene");
+			db->field = strdup("leene");
 			break;
 		case 1:
-			db->db_field = strdup("yath");
+			db->field = strdup("yath");
 			break;
 		case 2:
 		default:
-			db->db_field = strdup("pmb");
+			db->field = strdup("pmb");
 			break;
 		}
 	}
 
-	int numrows = cdb_exists(db->db_field) || bdb_exists(db->db_field);
+	int numrows = cdb_exists(db->field) || bdb_exists(db->field);
 
 	vector_push_db(dstack, db);
 	vector_push_int(dstack, numrows);

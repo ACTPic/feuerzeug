@@ -93,8 +93,8 @@ int node_destroy(struct node *n)
 			assert(tmp);
 			if (tmp->query)
 				free(tmp->query);
-			if (tmp->db_field)
-				free(tmp->db_field);
+			if (tmp->field)
+				free(tmp->field);
 			break;
 		}
 	case BF_TYPE_POINTER:

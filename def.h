@@ -20,7 +20,7 @@
 // Generische Struktur für alle unterstützten Datenbanken
 struct db {
 	char *query;
-	char *db_field;
+	char *field;
 };
 
 // Makros
