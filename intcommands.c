@@ -1093,6 +1093,17 @@ char *rip_query(char *orig_query)
 	}
 }
 
+static int numrows(char *field)
+{
+	if (!field || !*field)
+		return 0;
+
+	if (!strcmp(field, "randcalc()"))
+		return db_exists("leene");
+
+	return db_exists(field);
+}
+
 void bf_c_sql_query()
 {
 	char *query = vector_pop_string(dstack);
@@ -1143,17 +1154,6 @@ void bf_c_sql_fetch()
 	vector_push_db(dstack, db);
 	if (v)
 		vector_push_vector(dstack, v);
-}
-
-static int numrows(char *field)
-{
-	if (!field || !*field)
-		return 0;
-
-	if (!strcmp(field, "randcalc()"))
-		return db_exists("leene");
-
-	return db_exists(field);
 }
 
 void bf_c_sql_numrows()
