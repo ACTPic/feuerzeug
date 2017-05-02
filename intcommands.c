@@ -1099,7 +1099,7 @@ static int numrows(char *field)
 		return 0;
 
 	if (!strcmp(field, "randcalc()"))
-		return db_exists("leene");
+		return db_exists("leene") ? 3 : 0;
 
 	return db_exists(field);
 }
@@ -1143,6 +1143,11 @@ void bf_c_sql_fetch()
 		vector_put(v, "anzahl", node);
 	} else if (!strcmp(db_field, "randcalc()")) {
 		v = load_file(strdup("leene"));
+		vector_push_vector(dstack, v);
+		v = load_file(strdup("leene"));
+		vector_push_vector(dstack, v);
+		v = load_file(strdup("leene"));
+		// dritter Push unten ↓
 	} else
 		v = load_file(db->field);
 
