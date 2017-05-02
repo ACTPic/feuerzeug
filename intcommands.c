@@ -1151,15 +1151,21 @@ void bf_c_sql_fetch()
 	} else
 		v = load_file(db->field);
 
-	struct node *n = 0;
-	if (v)
-		n = vector_pick(v, "inhalt");
-	if (n) {
-		char *content = n->content;
-		if (content && *content) {
-			fprintf(stderr, "Hab irgend einen: „%s“…\n",
-				content);
-			if (!strcmp(content, "!"))
+	struct node *n_name = 0, *n_inhalt = 0;
+	if (v) {
+		n_inhalt = vector_pick(v, "inhalt");
+		n_name = vector_pick(v, "name");
+	}
+
+	if (n_name && n_inhalt) {
+		char *inhalt_content = n_inhalt->content;
+		char *name_content = n_name->content;
+		if (name_content && *name_content && inhalt_content
+		    && *inhalt_content) {
+			fprintf(stderr,
+				"Hab irgend einen: „%s“ = „%s“…\n",
+				name_content, inhalt_content);
+			if (!strcmp(inhalt_content, "!"))
 				fprintf(stderr, "Hab einen B\aang…\n");
 		}
 	}
