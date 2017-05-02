@@ -18,6 +18,11 @@ extern int bdb_exists(char *name);
 extern void bdb_store(char *name, struct vector *v);
 extern void bdb_delete(char *name);
 
+static int db_exists(char *name)
+{
+	return bdb_exists(name) || cdb_exists(name);
+}
+
 void bf_c_swap()
 {
 	struct node *n1;
@@ -1162,7 +1167,7 @@ void bf_c_sql_numrows()
 		}
 	}
 
-	int numrows = cdb_exists(db->field) || bdb_exists(db->field);
+	int numrows = db_exists(db->field);
 
 	vector_push_db(dstack, db);
 	vector_push_int(dstack, numrows);
