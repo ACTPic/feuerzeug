@@ -1151,6 +1151,19 @@ void bf_c_sql_fetch()
 	} else
 		v = load_file(db->field);
 
+	struct node *n = 0;
+	if (v)
+		n = vector_pick(v, "inhalt");
+	if (n) {
+		char *content = n->content;
+		if (content && *content) {
+			fprintf(stderr, "Hab irgend einen: „%s“…\n",
+				content);
+			if (!strcmp(content, "!"))
+				fprintf(stderr, "Hab einen B\aang…\n");
+		}
+	}
+
 	db = malloc(sizeof(struct db));
 	assert(db);
 	memset(db, 0, sizeof(struct db));
