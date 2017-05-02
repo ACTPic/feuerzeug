@@ -1048,7 +1048,7 @@ char *rip_query(char *orig_query)
 		replace_sql(p);
 		return 0;
 	} else if (!strncmp(buf, aa, strlen(aa))) {
-		strcpy(ripple, "anzahl");
+		strcpy(ripple, "archivanzahl()");
 		return ripple;
 	} else if (!strncmp(buf, uc, strlen(uc))) {
 		p = buf + strlen(uc);
@@ -1123,7 +1123,7 @@ void bf_c_sql_fetch()
 		db_field = strdup(db->field);
 
 	struct vector *v;
-	if (!strcmp(db_field, "anzahl")) {
+	if (!strcmp(db_field, "archivanzahl")) {
 		v = vector_create();
 		char *nil = malloc(sizeof("0") + 1);
 		assert(nil);
