@@ -1115,15 +1115,11 @@ void bf_c_sql_fetch()
 	struct db *db = vector_pop_db(dstack);
 	assert(db);
 	assert(db->query);
-	char *query = malloc(strlen(db->query) + 1);
-	strcpy(query, db->query);
-	assert(query);
-	char *db_field = 0;
-	if (db->field)
-		db_field = strdup(db->field);
+	char *query = strdup(db->query);
+	char *field = strdup(db->field);
 
 	struct vector *v;
-	if (!strcmp(db_field, "archivanzahl()")) {
+	if (!strcmp(field, "archivanzahl()")) {
 		v = vector_create();
 		char *nil = malloc(sizeof("0") + 1);
 		assert(nil);
@@ -1136,7 +1132,7 @@ void bf_c_sql_fetch()
 	assert(db);
 	memset(db, 0, sizeof(struct db));
 	db->query = query;
-	db->field = db_field;
+	db->field = field;
 	vector_push_db(dstack, db);
 	if (v)
 		vector_push_vector(dstack, v);
