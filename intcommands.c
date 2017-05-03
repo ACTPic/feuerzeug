@@ -1093,17 +1093,6 @@ char *rip_query(char *orig_query)
 	}
 }
 
-static int numrows(char *field)
-{
-	if (!field || !*field)
-		return 0;
-
-	if (!strcmp(field, "randcalc()"))
-		return db_exists("leene") ? 3 : 0;
-
-	return db_exists(field);
-}
-
 void bf_c_sql_query()
 {
 	char *query = vector_pop_string(dstack);
@@ -1134,42 +1123,15 @@ void bf_c_sql_fetch()
 		db_field = strdup(db->field);
 
 	struct vector *v;
-	if (!strcmp(db_field, "archivanzahl")) {
+	if (!strcmp(db_field, "archivanzahl()")) {
 		v = vector_create();
 		char *nil = malloc(sizeof("0") + 1);
 		assert(nil);
 		strcpy(nil, "0");
 		struct node *node = node_create(nil, BF_TYPE_STRING);
 		vector_put(v, "anzahl", node);
-	} else if (!strcmp(db_field, "randcalc()")) {
-		v = load_file(strdup("leene"));
-		vector_push_vector(dstack, v);
-		v = load_file(strdup("leene"));
-		vector_push_vector(dstack, v);
-		v = load_file(strdup("leene"));
-		// dritter Push unten ↓
 	} else
 		v = load_file(db->field);
-
-	struct node *n_name = 0, *n_inhalt = 0;
-	if (v) {
-		n_inhalt = vector_pick(v, "inhalt");
-		n_name = vector_pick(v, "name");
-	}
-
-	if (n_name && n_inhalt) {
-		char *inhalt_content = n_inhalt->content;
-		char *name_content = n_name->content;
-		if (name_content && *name_content && inhalt_content
-		    && *inhalt_content) {
-			fprintf(stderr,
-				"Hab irgend einen: „%s“ = „%s“…\n",
-				name_content, inhalt_content);
-			if (!strcmp(inhalt_content, "!"))
-				fprintf(stderr, "Hab einen B\aang…\n");
-		}
-	}
-
 	db = malloc(sizeof(struct db));
 	assert(db);
 	memset(db, 0, sizeof(struct db));
@@ -1189,8 +1151,26 @@ void bf_c_sql_numrows()
 		return;
 	}
 
+	if (!strcmp(db->field, "randcalc()")) {
+		int rnd = rand() % 3;
+		switch (rnd) {
+		case 0:
+			db->field = strdup("leene");
+			break;
+		case 1:
+			db->field = strdup("yath");
+			break;
+		case 2:
+		default:
+			db->field = strdup("pmb");
+			break;
+		}
+	}
+
+	int numrows = db_exists(db->field);
+
 	vector_push_db(dstack, db);
-	vector_push_int(dstack, numrows(db->field));
+	vector_push_int(dstack, numrows);
 }
 
 void bf_c_sql_freeres()
