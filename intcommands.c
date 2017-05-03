@@ -1126,6 +1126,19 @@ void bf_c_sql_fetch()
 		strcpy(nil, "0");
 		struct node *node = node_create(nil, BF_TYPE_STRING);
 		vector_put(v, "anzahl", node);
+	} else if (!strcmp(field, "randcalc()")) {
+		int rnd = rand() % 3;
+		switch (rnd) {
+		case 0:
+			v = load_file(strdup("leene"));
+			break;
+		case 1:
+			v = load_file(strdup("yath"));
+			break;
+		case 2:
+		default:
+			v = load_file(strdup("pmb"));
+		}
 	} else
 		v = load_file(db->field);
 	db = malloc(sizeof(struct db));
@@ -1147,23 +1160,12 @@ void bf_c_sql_numrows()
 		return;
 	}
 
+	int numrows = db_exists(db->field);
+
 	if (!strcmp(db->field, "randcalc()")) {
-		int rnd = rand() % 3;
-		switch (rnd) {
-		case 0:
-			db->field = strdup("leene");
-			break;
-		case 1:
-			db->field = strdup("yath");
-			break;
-		case 2:
-		default:
-			db->field = strdup("pmb");
-			break;
-		}
+		numrows = 3;	// XXX
 	}
 
-	int numrows = db_exists(db->field);
 
 	vector_push_db(dstack, db);
 	vector_push_int(dstack, numrows);
