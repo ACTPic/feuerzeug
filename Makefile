@@ -2,7 +2,7 @@ CC = gcc
 CFLAGS = -g -D_GNU_SOURCE -std=gnu11 -O0 -Og -Wall -Wextra -Werror
 
 LIBS = -lz -lm -lcdb -ldb
-OBJECTS = vector.o node.o intcommands.o file.o db_cdb.o db_bdb.o com.o botforth.o
+OBJECTS = vector.o node.o sql.o intcommands.o file.o db_cdb.o db_bdb.o com.o botforth.o
 HEADERS = def.h botforth.h com.h node.h vector.h
 
 all: botforth db
