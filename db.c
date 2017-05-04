@@ -33,15 +33,15 @@ static void build_node(char *name, struct vector *v, char *content)
 	vector_put(v, name, node);
 }
 
-static int dump(int64_t n, struct vector *v)
+static int dump(int n, struct vector *v)
 {
-	printf("#%7" PRId64 ": ", n);
+	printf("#%7d: ", n);
 	debug(v);
 	putchar('\n');
 	return 0;
 }
 
-static int dump_content(int64_t n, struct vector *v)
+static int dump_content(int n, struct vector *v)
 {
 	(void) n;
 
@@ -57,7 +57,7 @@ static int dump_content(int64_t n, struct vector *v)
 	return 0;
 }
 
-static int dump_content_newline(int64_t n, struct vector *v)
+static int dump_content_newline(int n, struct vector *v)
 {
 	(void) n;
 
