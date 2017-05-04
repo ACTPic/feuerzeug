@@ -107,6 +107,8 @@ char *rip_query(char *orig_query)
 	char *p;
 
 	const char *sq = "select * from calc where eintrag";
+	const char *rq =
+	    "select *,rand() as r from calc where (NOT (eintrag LIKE 'command/dope";
 	const char *Rq = "select *,rand() as r from calc where type=0";
 	const char *iq =
 	    "insert into calc (eintrag,inhalt,name,bot,network,channel,zeit,type) ";
@@ -132,6 +134,9 @@ char *rip_query(char *orig_query)
 		while (*p && p[strlen(p) - 1] == '/')
 			p[strlen(p) - 1] = 0;
 		return p;
+	} else if (!strncmp(buf, rq, strlen(rq))) {
+		strcpy(ripple, "command/dope/liste");
+		return ripple;
 	} else if (!strncmp(buf, Rq, strlen(Rq))) {
 		strcpy(ripple, "randcalc()");
 		return ripple;
