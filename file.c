@@ -70,3 +70,10 @@ void iterate(int (*action) (int64_t n, struct vector * content))
 
 	// TODO: Berkeley-DB auch.
 }
+
+struct vector *load_rand_file()
+{
+	return cdb_loadall_next();
+
+	// TODO: Berkeley-DB auch.
+}

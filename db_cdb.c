@@ -104,7 +104,7 @@ static bool build_next()
 void cdb_loadall_init()
 {
 	cdb_seqinit(&pos, &cdb);
-        if (name) {
+	if (name) {
 		free(name);
 		name = 0;
 	}
@@ -124,19 +124,22 @@ void cdb_loadall_init()
 
 struct vector *cdb_loadall_next()
 {
-	struct vector *v = vector_create();
-        struct node *node = node_create(name, BF_TYPE_STRING);
-        char cur_name[strlen(name)+1];
-        strcpy(cur_name, name);
-        vector_put(v, "eintrag", node);
+	if (!name)
+		cdb_loadall_init();
 
-        while(!strcmp(cur_name, name)) {
-                if(!sub)
-                        continue;
-                node = node_create(val, BF_TYPE_STRING);
+	struct vector *v = vector_create();
+	struct node *node = node_create(name, BF_TYPE_STRING);
+	char cur_name[strlen(name) + 1];
+	strcpy(cur_name, name);
+	vector_put(v, "eintrag", node);
+
+	while (!strcmp(cur_name, name)) {
+		if (!sub)
+			continue;
+		node = node_create(val, BF_TYPE_STRING);
 		vector_put(v, sub, node);
-                if(!build_next())
-                        return 0;
+		if (!build_next())
+			return 0;
 	}
 
 	return v;
@@ -159,8 +162,8 @@ static void build_node(char *name, struct vector *v, char *sub)
 	strcat(key, sub);
 
 	char *val = cdballoc(key);
-        struct node * node = node_create(val, BF_TYPE_STRING);
-        vector_put(v, sub, node);
+	struct node *node = node_create(val, BF_TYPE_STRING);
+	vector_put(v, sub, node);
 }
 
 struct vector *cdb_load(char *name)

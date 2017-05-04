@@ -46,7 +46,8 @@ char *getintcommandname(void *p);
 
 // file
 struct vector *load_file(char *name);
-void iterate(int (*action)(int64_t n, struct vector *content));
+struct vector *load_rand_file();
+int iterate(int (*action) (int n, struct vector * content));
 
 extern struct vector *word_load(char *name, char *ns);
 extern void infoblock_set_accesslevel(struct vector *word, int al);
