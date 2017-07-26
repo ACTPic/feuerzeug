@@ -8,6 +8,7 @@
 #include "botforth.h"
 
 extern void cdb_startup();
+extern struct vector *cdb_load_random();
 extern void bdb_init();
 extern void bdb_store(char *name, struct vector *v);
 
@@ -122,8 +123,7 @@ int main(int argc, char **argv)
 			}
 		case 'r':
 			{
-				// TODO: Echter Zufall 😉
-				struct vector *v = load_file("leene");
+				struct vector *v = cdb_load_random();
 				if (!v)
 					break;
 				char *eintrag =
