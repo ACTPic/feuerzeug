@@ -17,6 +17,7 @@ void puthelp()
 	       "    --help                        Diese Hilfe\n"
 	       "    --dump    [Eintrag]           Datenbankeintrag mit Spaltennamen anzeigen\n"
 	       "    --dumpall                     Alle Datenbankeinträge (mit Spalten) zeigen\n"
+	       "    --dumprandom                  Zufälligen Datenbankeintrag liefern\n"
 	       "    --content [Eintrag]           Das Feld „Inhalt“ ausgeben\n"
 	       "    --allcont                     Das Feld „Inhalt“ aller Einträge ausgeben\n"
 	       "    --anlcont                     ^ mit „\\n“ statt „\\0“ als Trenner\n"
@@ -91,6 +92,7 @@ int main(int argc, char **argv)
 			{"help", no_argument, 0, 'h'},
 			{"dump", required_argument, 0, 'd'},
 			{"dumpall", no_argument, 0, 'D'},
+			{"dumprandom", no_argument, 0, 'r'},
 			{"content", required_argument, 0, 'c'},
 			{"allcont", no_argument, 0, 'C'},
 			{"anlcont", no_argument, 0, 'N'},
@@ -98,7 +100,7 @@ int main(int argc, char **argv)
 			{0, 0, 0, 0}
 		};
 
-		int c = getopt_long(argc, argv, "d:c:hDCNw:",
+		int c = getopt_long(argc, argv, "d:c:hDrCNw:",
 				    long_options, &option_index);
 		if (c == -1)
 			break;
@@ -116,6 +118,22 @@ int main(int argc, char **argv)
 		case 'D':
 			{
 				iterate(dump);
+				break;
+			}
+		case 'r':
+			{
+				// TODO: Echter Zufall 😉
+				struct vector *v = load_file("leene");
+				if (!v)
+					break;
+				char *eintrag =
+				    vector_pick_string(v, "eintrag");
+				char *inhalt =
+				    vector_pick_string(v, "inhalt");
+				if (!eintrag || !inhalt)
+					break;
+				printf("%s → „%s“\n", eintrag,
+				       inhalt);
 				break;
 			}
 		case 'c':
