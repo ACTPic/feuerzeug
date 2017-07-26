@@ -19,7 +19,7 @@ void puthelp()
 	       "    --dumpall                     Alle Datenbankeinträge (mit Spalten) zeigen\n"
 	       "    --content [Eintrag]           Das Feld „Inhalt“ ausgeben\n"
 	       "    --allcont                     Das Feld „Inhalt“ aller Einträge ausgeben\n"
-               "    --anlcont                     ^ mit „\\n“ statt „\\0“ als Trenner\n"
+	       "    --anlcont                     ^ mit „\\n“ statt „\\0“ als Trenner\n"
 	       "    --write   [Eintrag] [Inhalt]  Datenbankeintrag schreiben\n");
 }
 
