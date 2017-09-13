@@ -166,23 +166,6 @@ static void build_node(char *name, struct vector *v, char *sub)
 	vector_put(v, sub, node);
 }
 
-struct vector *cdb_load_random()
-{
-	int guard;
-	for (guard = 0; guard < 23; guard++) {
-		cdb_loadall_init();
-		int skip = rand() % 6667;
-		for (int i = 0; i < skip; i++) {
-			if (cdb_seqnext(&pos, &cdb) <= 0)
-				break;
-		}
-		build_next();
-		return cdb_loadall_next();
-	}
-	assert(!guard);
-	return 0;
-}
-
 struct vector *cdb_load(char *name)
 {
 	int cdbret = cdb_exists(name);
@@ -205,4 +188,15 @@ struct vector *cdb_load(char *name)
 	build_node(name, vc, "lastcall");
 
 	return vc;
+}
+
+struct vector *cdb_load_random()
+{
+	int fd = open("calc.cdb.index", O_RDONLY);
+	if (fd == -1) {
+		perror("open");
+		exit(EXIT_FAILURE);
+	}
+
+        return cdb_load("leene");
 }
