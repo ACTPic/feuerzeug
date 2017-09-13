@@ -3,7 +3,9 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <string.h>
+#include <unistd.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 
@@ -190,13 +192,76 @@ struct vector *cdb_load(char *name)
 	return vc;
 }
 
+void uint32_unpack(const char s[4], uint32_t * u)
+{
+	uint32_t result;
+
+	result = (unsigned char) s[3];
+	result <<= 8;
+	result += (unsigned char) s[2];
+	result <<= 8;
+	result += (unsigned char) s[1];
+	result <<= 8;
+	result += (unsigned char) s[0];
+
+	*u = result;
+}
+
 struct vector *cdb_load_random()
 {
-	int fd = open("calc.cdb.index", O_RDONLY);
-	if (fd == -1) {
-		perror("open");
-		exit(EXIT_FAILURE);
+	int guard;
+	for (guard = 0; guard < 23; guard++) {
+		int fd = open("calc.cdb.index", O_RDONLY);
+		if (fd == -1) {
+			perror("open");
+			exit(EXIT_FAILURE);
+		}
+
+		off_t size = lseek(fd, 0, SEEK_END);
+		assert(size > 0 && size % 4 == 0);
+
+		int rndmax = min(RAND_MAX, size / 4);
+		int rnd = rand() % rndmax;
+		off_t off = rnd * 4 + 2048;
+		lseek(fd, off, SEEK_SET);
+
+		char buf_pos[4];
+		read(fd, buf_pos, 4);
+		uint32_t pos;
+		uint32_unpack(buf_pos, &pos);
+		printf("pos: %u\n", pos);
+		close(fd);
+
+		fd = open("calc.cdb", O_RDONLY);
+		if (fd == -1) {
+			perror("open");
+			exit(EXIT_FAILURE);
+		}
+		off_t loc = lseek(fd, pos, SEEK_SET);
+		assert(loc == pos);
+		char buf_keylen[4];
+		read(fd, buf_keylen, 4);
+		char buf_datalen[4];
+		read(fd, buf_datalen, 4);
+		uint32_t keylen;
+		uint32_unpack(buf_keylen, &keylen);
+		uint32_t datalen;
+		uint32_unpack(buf_datalen, &datalen);
+		if (!datalen) {
+			printf("nope.\n");
+			continue;
+		}
+		char key[keylen + 1];
+		read(fd, key, keylen);
+		key[keylen] = 0;
+		close(fd);
+                printf("key: %s\n", key);
+                split_key(key);
+                printf("name: %s\n", name);
+                struct vector *vc = cdb_load(name);
+                if(vc)
+                        return vc;
 	}
 
-        return cdb_load("leene");
+        return 0;
 }
