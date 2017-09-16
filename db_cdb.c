@@ -229,7 +229,6 @@ struct vector *cdb_load_random()
 		read(fd, buf_pos, 4);
 		uint32_t pos;
 		uint32_unpack(buf_pos, &pos);
-		printf("pos: %u\n", pos);
 		close(fd);
 
 		fd = open("calc.cdb", O_RDONLY);
@@ -248,20 +247,17 @@ struct vector *cdb_load_random()
 		uint32_t datalen;
 		uint32_unpack(buf_datalen, &datalen);
 		if (!datalen) {
-			printf("nope.\n");
 			continue;
 		}
 		char key[keylen + 1];
 		read(fd, key, keylen);
 		key[keylen] = 0;
 		close(fd);
-                printf("key: %s\n", key);
-                split_key(key);
-                printf("name: %s\n", name);
-                struct vector *vc = cdb_load(name);
-                if(vc)
-                        return vc;
+		split_key(key);
+		struct vector *vc = cdb_load(name);
+		if (vc)
+			return vc;
 	}
 
-        return 0;
+	return 0;
 }
