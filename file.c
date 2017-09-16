@@ -74,7 +74,16 @@ void iterate(int (*action) (int64_t n, struct vector * content))
 
 struct vector *load_rand_file()
 {
-	return cdb_load_random();
+	for (int guard = 0; guard < 2323; guard++) {
+		struct vector *v = cdb_load_random();
+		char *eintrag = vector_pick_string(v, "eintrag");
+		assert(eintrag);
+		if (strstr(eintrag, "command"))
+			continue;
+		return v;
+	}
+
+	return 0;
 
 	// TODO: Berkeley-DB auch.
 }
