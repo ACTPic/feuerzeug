@@ -1,7 +1,5 @@
 // Kredite: Michael Tokarev (tinycdb),  Daniel Julius Bernstein (CDB)
 
-#define _GNU_SOURCE
-
 #include <sys/types.h>
 #include <stdio.h>
 #include <stdlib.h>
