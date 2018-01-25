@@ -15,16 +15,6 @@
 
 #define progname "cdbdumpindex"
 
-static inline size_t ustrlen(const unsigned char *s)
-{
-	return strlen((const char *) s);
-}
-
-static inline unsigned char *ufgets(unsigned char *s, int size, FILE * f)
-{
-	return (unsigned char *) fgets((char *) s, size, f);
-}
-
 static unsigned char *buf;
 static unsigned blen;
 
@@ -39,7 +29,6 @@ static void allocbuf(unsigned len)
 		blen = len;
 	}
 }
-
 
 static void
 fget(FILE * f, unsigned char *b, unsigned len, unsigned *posp,
