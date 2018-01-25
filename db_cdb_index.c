@@ -11,20 +11,8 @@
 #include <sys/stat.h>
 #include "cdb.h"
 
-static unsigned char *buf;
-static unsigned blen;
-
-static void allocbuf(unsigned len)
-{
-	if (blen < len) {
-		buf =
-		    (unsigned char *) (buf ? realloc(buf, len) :
-				       malloc(len));
-		if (!buf)
-			exit(1);
-		blen = len;
-	}
-}
+#define blen 2048
+static unsigned char buf[blen];
 
 static void
 fget(FILE * f, unsigned char *b, unsigned len, unsigned *posp,
@@ -63,8 +51,7 @@ static void dmode()
 		exit(1);
 	else if (!(fo = fopen("calc.cdb.index", "w")))
 		exit(1);
-	allocbuf(2048);
-	fget(f, buf, 2048, &pos, 2048);
+	fget(f, buf, blen, &pos, blen);
 	eod = cdb_unpack(buf);
 	while (pos < eod) {
 		cdb_pack(pos, buf);
