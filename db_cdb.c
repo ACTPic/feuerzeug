@@ -211,7 +211,7 @@ struct vector *cdb_load_random()
 {
 	int guard;
 	for (guard = 0; guard < 23; guard++) {
-		int fd = open("calc.cdb.index", O_RDONLY);
+		int fd = open("calc.cdb.index.nocmd", O_RDONLY);
 		if (fd == -1) {
 			perror("open");
 			exit(EXIT_FAILURE);
