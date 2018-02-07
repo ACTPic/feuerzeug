@@ -8,6 +8,7 @@
 #include <errno.h>
 #include <getopt.h>
 #include <unistd.h>
+#include <stdbool.h>
 #include <sys/stat.h>
 #include <inttypes.h>
 #include <sys/types.h>
@@ -34,7 +35,8 @@ void puthelp()
 	       "    --content [Eintrag]           Das Feld „Inhalt“ ausgeben\n"
 	       "    --allcont                     Das Feld „Inhalt“ aller Einträge ausgeben\n"
 	       "    --anlcont                     ^ mit „\\n“ statt „\\0“ als Trenner\n"
-	       "    --genindex_cdb                Indexdatei für CDB-Datenbank anlegen\n");
+	       "    --genindex_cdb                Indexdatei für CDB-Datenbank anlegen\n"
+	       "    --genindex_cdb_nocmd          Indexdatei für CDB-Datenbank anlegen, Kommandos rausgefiltert\n");
 }
 
 static void
@@ -53,14 +55,22 @@ fget(FILE * f, unsigned char *b, unsigned len, unsigned *posp,
 		*posp += len;
 }
 
+static bool iscmd;
+
 static int fskip(FILE * fi, unsigned len, unsigned *posp, unsigned limit)
 {
 	while (len > blen) {
 		fget(fi, buf, blen, posp, limit);
 		len -= blen;
+
 	}
 	if (len) {
 		fget(fi, buf, len, posp, limit);
+		if (len != blen) {
+			buf[len] = 0;
+			if (strstr((char *) buf, "command"))
+				iscmd = true;
+		}
 	}
 	return 0;
 }
@@ -86,6 +96,40 @@ static void genindex_cdb()
 			exit(1);
 		if (fskip(f, vlen, &pos, eod) != 0)
 			exit(1);
+	}
+	if (fflush(fo) < 0 || pos != eod)
+		exit(1);
+}
+
+static void genindex_cdb_nocmd()
+{
+	unsigned eod, klen, vlen;
+	unsigned pos = 0;
+	FILE *f, *fo;
+	if (!(f = fopen("calc.cdb", "r")))
+		exit(1);
+	else if (!(fo = fopen("calc.cdb.index.nocmd", "w")))
+		exit(1);
+	fget(f, buf, blen, &pos, blen);
+	eod = cdb_unpack(buf);
+	while (pos < eod) {
+		int savepos = pos;
+		fget(f, buf, 8, &pos, eod);
+		klen = cdb_unpack(buf);
+		vlen = cdb_unpack(buf + 4);
+
+		iscmd = false;
+
+		if (fskip(f, klen, &pos, eod) != 0)
+			exit(1);
+		if (fskip(f, vlen, &pos, eod) != 0)
+			exit(1);
+
+		if (iscmd)
+			continue;
+
+		cdb_pack(savepos, buf);
+		fwrite(buf, 4, 1, fo);
 	}
 	if (fflush(fo) < 0 || pos != eod)
 		exit(1);
@@ -166,6 +210,7 @@ int main(int argc, char **argv)
 			{"anlcont", no_argument, 0, 'N'},
 			{"write", required_argument, 0, 'w'},
 			{"genindex_cdb", no_argument, 0, 'g'},
+			{"genindex_cdb_nocmd", no_argument, 0, 'G'},
 			{0, 0, 0, 0}
 		};
 
@@ -231,6 +276,9 @@ int main(int argc, char **argv)
 			break;
 		case 'g':
 			genindex_cdb();
+			break;
+		case 'G':
+			genindex_cdb_nocmd();
 			break;
 		case '?':
 			break;
