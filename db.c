@@ -57,7 +57,7 @@ fget(FILE * f, unsigned char *b, unsigned len, unsigned *posp,
 
 static bool iscmd;
 
-static int fskip(FILE * fi, unsigned len, unsigned *posp, unsigned limit)
+static void fskip(FILE * fi, unsigned len, unsigned *posp, unsigned limit)
 {
 	while (len > blen) {
 		fget(fi, buf, blen, posp, limit);
@@ -72,7 +72,6 @@ static int fskip(FILE * fi, unsigned len, unsigned *posp, unsigned limit)
 				iscmd = true;
 		}
 	}
-	return 0;
 }
 
 static void genindex_cdb()
@@ -92,10 +91,8 @@ static void genindex_cdb()
 		fget(f, buf, 8, &pos, eod);
 		klen = cdb_unpack(buf);
 		vlen = cdb_unpack(buf + 4);
-		if (fskip(f, klen, &pos, eod) != 0)
-			exit(1);
-		if (fskip(f, vlen, &pos, eod) != 0)
-			exit(1);
+		fskip(f, klen, &pos, eod);
+		fskip(f, vlen, &pos, eod);
 	}
 	if (fflush(fo) < 0 || pos != eod)
 		exit(1);
@@ -120,10 +117,8 @@ static void genindex_cdb_nocmd()
 
 		iscmd = false;
 
-		if (fskip(f, klen, &pos, eod) != 0)
-			exit(1);
-		if (fskip(f, vlen, &pos, eod) != 0)
-			exit(1);
+		fskip(f, klen, &pos, eod);
+		fskip(f, vlen, &pos, eod);
 
 		if (iscmd)
 			continue;
