@@ -1,5 +1,6 @@
 // Kredite: Michael Tokarev (tinycdb),  Daniel Julius Bernstein (CDB)
 
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -36,6 +37,7 @@ void puthelp()
 	       "    --allcont                     Das Feld „Inhalt“ aller Einträge ausgeben\n"
 	       "    --anlcont                     ^ mit „\\n“ statt „\\0“ als Trenner\n"
 	       "    --genindex_cdb                Indexdatei für CDB-Datenbank anlegen\n"
+	       "    --genindex_cdb_cmd            Indexdatei für CDB-Datenbank anlegen, nur Kommandos\n"
 	       "    --genindex_cdb_nocmd          Indexdatei für CDB-Datenbank anlegen, Kommandos rausgefiltert\n");
 }
 
@@ -55,23 +57,33 @@ fget(FILE * f, unsigned char *b, unsigned len, unsigned *posp,
 		*posp += len;
 }
 
-static bool iscmd;
-
-static void fskip(FILE * fi, unsigned len, unsigned *posp, unsigned limit)
+static bool fskip_iscmd(FILE * fi, unsigned len, unsigned *posp,
+			unsigned limit)
 {
 	while (len > blen) {
 		fget(fi, buf, blen, posp, limit);
 		len -= blen;
-
 	}
 	if (len) {
 		fget(fi, buf, len, posp, limit);
 		if (len != blen) {
 			buf[len] = 0;
-			if (strstr((char *) buf, "command"))
-				iscmd = true;
+			char *cmdname =
+			    strstr((char *) buf, "command/dope/");
+			if (!cmdname)
+				return false;
+			return true;
+			/*
+			   unsigned char cmdfirstchr =
+			   cmdname[strlen("command/dope/")];
+			   if (!isalnum(cmdfirstchr))
+			   return false;
+			   if (strchr(cmdname, '_'))
+			   return true;
+			 */
 		}
 	}
+	return false;
 }
 
 static void genindex_cdb()
@@ -91,8 +103,8 @@ static void genindex_cdb()
 		fget(f, buf, 8, &pos, eod);
 		klen = cdb_unpack(buf);
 		vlen = cdb_unpack(buf + 4);
-		fskip(f, klen, &pos, eod);
-		fskip(f, vlen, &pos, eod);
+		fskip_iscmd(f, klen, &pos, eod);
+		fskip_iscmd(f, vlen, &pos, eod);
 	}
 	if (fflush(fo) < 0 || pos != eod)
 		exit(1);
@@ -115,10 +127,10 @@ static void genindex_cdb_nocmd()
 		klen = cdb_unpack(buf);
 		vlen = cdb_unpack(buf + 4);
 
-		iscmd = false;
+		bool iscmd = false;
 
-		fskip(f, klen, &pos, eod);
-		fskip(f, vlen, &pos, eod);
+		fskip_iscmd(f, klen, &pos, eod);
+		iscmd = fskip_iscmd(f, vlen, &pos, eod);
 
 		if (iscmd)
 			continue;
