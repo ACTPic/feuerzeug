@@ -68,8 +68,7 @@ static bool fskip_iscmd(FILE * fi, unsigned len, unsigned *posp,
 		fget(fi, buf, len, posp, limit);
 		if (len != blen) {
 			buf[len] = 0;
-			char *cmdname =
-			    strstr((char *) buf, "command/dope/");
+			char *cmdname = strstr((char *) buf, "command");
 			if (!cmdname)
 				return false;
 			return true;
