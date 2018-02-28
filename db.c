@@ -58,8 +58,11 @@ fget(FILE * f, unsigned char *b, unsigned len, unsigned *posp,
 }
 
 static bool fskip_iscmd(FILE * fi, unsigned len, unsigned *posp,
-			unsigned limit)
+			unsigned limit, bool * fine)
 {
+	if (fine)
+		*fine = false;
+
 	while (len > blen) {
 		fget(fi, buf, blen, posp, limit);
 		len -= blen;
@@ -71,15 +74,19 @@ static bool fskip_iscmd(FILE * fi, unsigned len, unsigned *posp,
 			char *cmdname = strstr((char *) buf, "command");
 			if (!cmdname)
 				return false;
-			return true;
-			/*
-			   unsigned char cmdfirstchr =
-			   cmdname[strlen("command/dope/")];
-			   if (!isalnum(cmdfirstchr))
-			   return false;
-			   if (strchr(cmdname, '_'))
-			   return true;
-			 */
+
+			cmdname = strstr((char *) buf, "command/dope/");
+			if (!cmdname)
+				return true;
+
+			unsigned char cmdfirstchr =
+			    cmdname[strlen("command/dope/")];
+			if (!isalnum(cmdfirstchr))
+				return true;;
+			if (strchr(cmdname, '_'))
+				return true;
+			if (fine)
+				*fine = true;
 		}
 	}
 	return false;
@@ -102,8 +109,8 @@ static void genindex_cdb()
 		fget(f, buf, 8, &pos, eod);
 		klen = cdb_unpack(buf);
 		vlen = cdb_unpack(buf + 4);
-		fskip_iscmd(f, klen, &pos, eod);
-		fskip_iscmd(f, vlen, &pos, eod);
+		fskip_iscmd(f, klen, &pos, eod, 0);
+		fskip_iscmd(f, vlen, &pos, eod, 0);
 	}
 	if (fflush(fo) < 0 || pos != eod)
 		exit(1);
@@ -126,10 +133,41 @@ static void genindex_cdb_nocmd()
 		klen = cdb_unpack(buf);
 		vlen = cdb_unpack(buf + 4);
 
-		bool iscmd = fskip_iscmd(f, klen, &pos, eod);
-		fskip_iscmd(f, vlen, &pos, eod);
+		bool iscmd = fskip_iscmd(f, klen, &pos, eod, 0);
+		fskip_iscmd(f, vlen, &pos, eod, 0);
 
 		if (iscmd)
+			continue;
+
+		cdb_pack(savepos, buf);
+		fwrite(buf, 4, 1, fo);
+	}
+	if (fflush(fo) < 0 || pos != eod)
+		exit(1);
+}
+
+static void genindex_cdb_cmd()
+{
+	unsigned eod, klen, vlen;
+	unsigned pos = 0;
+	FILE *f, *fo;
+	if (!(f = fopen("calc.cdb", "r")))
+		exit(1);
+	else if (!(fo = fopen("calc.cdb.index.cmd", "w")))
+		exit(1);
+	fget(f, buf, blen, &pos, blen);
+	eod = cdb_unpack(buf);
+	while (pos < eod) {
+		int savepos = pos;
+		fget(f, buf, 8, &pos, eod);
+		klen = cdb_unpack(buf);
+		vlen = cdb_unpack(buf + 4);
+
+		bool fine;
+		fskip_iscmd(f, klen, &pos, eod, &fine);
+		fskip_iscmd(f, vlen, &pos, eod, 0);
+
+		if (!fine)
 			continue;
 
 		cdb_pack(savepos, buf);
@@ -214,11 +252,12 @@ int main(int argc, char **argv)
 			{"anlcont", no_argument, 0, 'N'},
 			{"write", required_argument, 0, 'w'},
 			{"genindex_cdb", no_argument, 0, 'g'},
+			{"genindex_cdb_cmd", no_argument, 0, 'K'},
 			{"genindex_cdb_nocmd", no_argument, 0, 'G'},
 			{0, 0, 0, 0}
 		};
 
-		int c = getopt_long(argc, argv, "d:c:hdrCNw:g",
+		int c = getopt_long(argc, argv, "d:c:hdrCNw:gGK",
 				    long_options, &option_index);
 		if (c == -1)
 			break;
@@ -283,6 +322,9 @@ int main(int argc, char **argv)
 			break;
 		case 'G':
 			genindex_cdb_nocmd();
+			break;
+		case 'K':
+			genindex_cdb_cmd();
 			break;
 		case '?':
 			break;
