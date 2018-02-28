@@ -127,10 +127,8 @@ static void genindex_cdb_nocmd()
 		klen = cdb_unpack(buf);
 		vlen = cdb_unpack(buf + 4);
 
-		bool iscmd = false;
-
-		fskip_iscmd(f, klen, &pos, eod);
-		iscmd = fskip_iscmd(f, vlen, &pos, eod);
+		bool iscmd = fskip_iscmd(f, klen, &pos, eod);
+		fskip_iscmd(f, vlen, &pos, eod);
 
 		if (iscmd)
 			continue;
