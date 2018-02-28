@@ -75,7 +75,7 @@ void iterate(int (*action) (int64_t n, struct vector * content))
 struct vector *load_rand_file(bool cmd)
 {
 	for (int guard = 0; guard < 2323; guard++) {
-		struct vector *v = cdb_load_random(cmd ? false : false);
+		struct vector *v = cdb_load_random(cmd);
 		char *eintrag = vector_pick_string(v, "eintrag");
 		assert(eintrag);
 		return v;
