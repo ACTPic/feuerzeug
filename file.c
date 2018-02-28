@@ -8,7 +8,7 @@
 extern struct vector *cdb_load(char *name);
 extern void cdb_loadall_init();
 extern struct vector *cdb_loadall_next();
-extern struct vector *cdb_load_random();
+extern struct vector *cdb_load_random(bool cmd);
 
 // Zum Debuggen
 bool vector_str_equal(struct vector *v0, struct vector *v1)
@@ -72,14 +72,12 @@ void iterate(int (*action) (int64_t n, struct vector * content))
 	// TODO: Berkeley-DB auch.
 }
 
-struct vector *load_rand_file()
+struct vector *load_rand_file(bool cmd)
 {
 	for (int guard = 0; guard < 2323; guard++) {
-		struct vector *v = cdb_load_random();
+		struct vector *v = cdb_load_random(cmd ? false : false);
 		char *eintrag = vector_pick_string(v, "eintrag");
 		assert(eintrag);
-		if (strstr(eintrag, "command"))
-			continue;
 		return v;
 	}
 

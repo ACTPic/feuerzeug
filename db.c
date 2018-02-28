@@ -22,7 +22,7 @@
 static unsigned char buf[blen];
 
 extern void cdb_startup();
-extern struct vector *cdb_load_random();
+extern struct vector *cdb_load_random(bool cmd);
 extern void bdb_init();
 extern void bdb_store(char *name, struct vector *v);
 
@@ -279,7 +279,7 @@ int main(int argc, char **argv)
 			}
 		case 'r':
 			{
-				struct vector *v = cdb_load_random();
+				struct vector *v = cdb_load_random(false);
 				if (!v)
 					break;
 				char *eintrag =

@@ -935,7 +935,7 @@ void bf_c_sql_fetch()
 		struct node *node = node_create(nil, BF_TYPE_STRING);
 		vector_put(v, "anzahl", node);
 	} else if (!strcmp(field, "randcalc()"))
-		v = load_rand_file();
+		v = load_rand_file(false);
 	else
 		v = load_file(db->field);
 	db = malloc(sizeof(struct db));

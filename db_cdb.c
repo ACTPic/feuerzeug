@@ -43,6 +43,9 @@ char *cdballoc(char *key)
 
 int cdb_exists(char *name)
 {
+	if (!name)
+		return 0;
+
 	char key[strlen(name) + strlen("/") + strlen("bot") + 1];
 	char *p = key, *n = name;
 	while (*n)
@@ -207,11 +210,13 @@ void uint32_unpack(const char s[4], uint32_t * u)
 	*u = result;
 }
 
-struct vector *cdb_load_random()
+struct vector *cdb_load_random(bool cmd)
 {
 	int guard;
 	for (guard = 0; guard < 23; guard++) {
-		int fd = open("calc.cdb.index.nocmd", O_RDONLY);
+		char *fname = cmd ? "calc.cdb.index.cmd" :
+		    "calc.cdb.index.nocmd";
+		int fd = open(fname, O_RDONLY);
 		if (fd == -1) {
 			perror("open");
 			exit(EXIT_FAILURE);
