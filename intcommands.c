@@ -935,7 +935,11 @@ void bf_c_sql_fetch()
 		struct node *node = node_create(nil, BF_TYPE_STRING);
 		vector_put(v, "anzahl", node);
 	} else if (!strcmp(field, "randcalc()"))
-		v = load_rand_file(false);
+		v = load_rand_file();
+	else if (!strcmp(field, "randcmds()"))
+		v = load_rand_cmd();
+	else if (!strcmp(field, "randcmd()"))
+		v = load_rand_cmd();
 	else
 		v = load_file(db->field);
 	db = malloc(sizeof(struct db));
@@ -961,6 +965,8 @@ void bf_c_sql_numrows()
 
 	if (!strcmp(db->field, "randcalc()"))
 		numrows = 43;
+	else if (!strcmp(db->field, "randcmds()"))
+		numrows = 23;
 
 	vector_push_db(dstack, db);
 	vector_push_int(dstack, numrows);

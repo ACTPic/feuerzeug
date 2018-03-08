@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
 #include "node.h"
@@ -72,16 +73,29 @@ void iterate(int (*action) (int64_t n, struct vector * content))
 	// TODO: Berkeley-DB auch.
 }
 
-struct vector *load_rand_file(bool cmd)
+struct vector *load_rand_cmd()
 {
-	for (int guard = 0; guard < 2323; guard++) {
-		struct vector *v = cdb_load_random(cmd);
-		char *eintrag = vector_pick_string(v, "eintrag");
-		assert(eintrag);
-		return v;
-	}
+	struct vector *v = cdb_load_random(true);
+	char *eintrag = vector_pick_string(v, "eintrag");
+	assert(eintrag);
+	assert(strlen(eintrag) > 13);
+	char *shortened = malloc(strlen(eintrag) - 13);
+	assert(shortened);
+	strcpy(shortened, eintrag + 13);
+	vector_replace_string(v, "eintrag", shortened);
+	free(eintrag);
 
-	return 0;
+	return v;
+
+	// TODO: Berkeley-DB auch.
+}
+
+struct vector *load_rand_file()
+{
+	struct vector *v = cdb_load_random(false);
+	char *eintrag = vector_pick_string(v, "eintrag");
+	assert(eintrag);
+	return v;
 
 	// TODO: Berkeley-DB auch.
 }

@@ -227,7 +227,8 @@ struct vector *cdb_load_random(bool cmd)
 
 		int rndmax = min(RAND_MAX, size / 4);
 		int rnd = rand() % rndmax;
-		off_t off = rnd * 4 + 2048;
+		off_t off = rnd;
+		off *= 4;
 		lseek(fd, off, SEEK_SET);
 
 		char buf_pos[4];

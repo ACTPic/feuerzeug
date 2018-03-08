@@ -110,6 +110,9 @@ char *rip_query(char *orig_query)
 	const char *rq =
 	    "select *,rand() as r from calc where (NOT (eintrag LIKE 'command/dope";
 	const char *Rq = "select *,rand() as r from calc where type=0";
+	const char *rrq =
+	    "select substring(eintrag,14) as eintrag, tag, if";
+	const char *rrrq = "select * from calc where ((eintrag > 'command";
 	const char *iq =
 	    "insert into calc (eintrag,inhalt,name,bot,network,channel,zeit,type) ";
 	const char *rc =
@@ -139,6 +142,12 @@ char *rip_query(char *orig_query)
 		return ripple;
 	} else if (!strncmp(buf, Rq, strlen(Rq))) {
 		strcpy(ripple, "randcalc()");
+		return ripple;
+	} else if (!strncmp(buf, rrq, strlen(rrq))) {
+		strcpy(ripple, "randcmds()");
+		return ripple;
+	} else if (!strncmp(buf, rrrq, strlen(rrrq))) {
+		strcpy(ripple, "randcmd()");
 		return ripple;
 	} else if (!strncmp(buf, dc, strlen(dc))) {
 		p = buf + strlen(dc);
@@ -205,6 +214,7 @@ char *rip_query(char *orig_query)
 		return 0;
 	} else {
 		printf("Unsupported SQL-Query: „%s“\n", buf);
+//              exit(23);
 		return 0;
 	}
 }
