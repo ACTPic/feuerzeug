@@ -73,6 +73,17 @@ void iterate(int (*action) (int64_t n, struct vector * content))
 	// TODO: Berkeley-DB auch.
 }
 
+struct vector *load_rand_single_cmd()
+{
+	struct vector *v = cdb_load_random(true);
+	char *eintrag = vector_pick_string(v, "eintrag");
+	assert(eintrag);
+
+	return v;
+
+	// TODO: Berkeley-DB auch.
+}
+
 struct vector *load_rand_cmd()
 {
 	struct vector *v = cdb_load_random(true);

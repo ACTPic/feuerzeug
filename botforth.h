@@ -47,6 +47,7 @@ char *getintcommandname(void *p);
 // file
 struct vector *load_file(char *name);
 struct vector *load_rand_file();
+struct vector *load_rand_single_cmd();
 struct vector *load_rand_cmd();
 int iterate(int (*action) (int n, struct vector * content));
 

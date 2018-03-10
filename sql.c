@@ -138,7 +138,7 @@ char *rip_query(char *orig_query)
 			p[strlen(p) - 1] = 0;
 		return p;
 	} else if (!strncmp(buf, rq, strlen(rq))) {
-		strcpy(ripple, "command/dope/liste");
+		strcpy(ripple, "randsinglecmd()");
 		return ripple;
 	} else if (!strncmp(buf, Rq, strlen(Rq))) {
 		strcpy(ripple, "randcalc()");

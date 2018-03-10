@@ -936,6 +936,8 @@ void bf_c_sql_fetch()
 		vector_put(v, "anzahl", node);
 	} else if (!strcmp(field, "randcalc()"))
 		v = load_rand_file();
+	else if (!strcmp(field, "randsinglecmd()"))
+		v = load_rand_single_cmd();
 	else if (!strcmp(field, "randcmds()"))
 		v = load_rand_cmd();
 	else if (!strcmp(field, "randcmd()"))
